@@ -205,6 +205,9 @@ function logout(){localStorage.removeItem(CFG);location.reload()}
  const c=localStorage.getItem(CFG);if(!c)return;
  try{
   const s=JSON.parse(c);GH.token=s.token;GH.user=s.user||'';GH.repo=DATA_REPO;
+  if(!GH.user){ // sessão antiga: descobre o nome pelo auth.json (o campo user não é secreto)
+   try{const a=await(await fetch(`auth.json?t=${Date.now()}`,{cache:'no-store'})).json();GH.user=a.user||''}catch(e){}
+  }
   await pull();openSite();
  }catch(e){
   localStorage.removeItem(CFG);
