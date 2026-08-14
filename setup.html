@@ -3,80 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Configurar acesso | Nutri Materno-Infantil</title>
+<title>Trocar senha | Nutri Materno-Infantil</title>
 <style>
 :root{--bg:#f7f8f6;--card:#fff;--text:#26332d;--muted:#718078;--primary:#5f8d78;--primary2:#e5f0ea;--border:#e3e9e5;--danger:#b85c5c;--ok:#2f7d5b}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text);padding:30px 18px}
-.wrap{max-width:640px;margin:0 auto}
-.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;margin-bottom:18px}
-h1{font-size:23px;margin:0 0 6px}h1 span{color:var(--primary)}
-p{color:var(--muted);line-height:1.55}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text);display:grid;place-items:center;min-height:100vh;padding:24px 18px}
+.wrap{width:min(430px,100%)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:32px;box-shadow:0 15px 45px #29463812}
+.back{color:var(--primary);font-size:14px;text-decoration:none;font-weight:700}
+h1{font-size:23px;margin:16px 0 8px}h1 span{color:var(--primary)}
+.lead{color:var(--muted);line-height:1.55;margin:0;font-size:14.5px}
 label{display:block;font-size:13px;font-weight:700;margin:18px 0 7px}
+.hint{font-size:12px;color:var(--muted);font-weight:400;margin-top:-4px;margin-bottom:7px;line-height:1.45}
 .field{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px 14px;font:inherit;outline:none;background:#fff}
 .field:focus{border-color:var(--primary)}
-textarea.field{min-height:150px;font-family:Consolas,monospace;font-size:13px;resize:vertical}
+textarea.field{min-height:110px;font-family:Consolas,monospace;font-size:12px;resize:vertical}
 .btn{border:0;border-radius:12px;padding:12px 18px;cursor:pointer;font-weight:700;font-size:15px}
 .btn-primary{background:var(--primary);color:#fff}.btn-light{background:var(--primary2);color:var(--primary)}
 .btn:disabled{opacity:.5;cursor:default}
-.warn{background:#fff8e8;border:1px solid #f0e0bd;border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.55;color:#6b5a2e}
-.err{color:var(--danger);font-size:14px;margin-top:12px}
-.ok{color:var(--ok);font-size:14px;margin-top:12px;font-weight:700}
+.err{color:var(--danger);font-size:13.5px;margin-top:14px;line-height:1.5}
+.ok{color:var(--ok);font-size:13.5px;margin-top:12px;font-weight:700}
 .hidden{display:none!important}
-.meter{font-size:13px;margin-top:7px;color:var(--muted)}
-code{background:#f0f2f0;padding:2px 6px;border-radius:6px;font-size:13px}
-ol{line-height:1.75;padding-left:22px}
+.meter{font-size:12.5px;margin-top:7px;color:var(--muted)}
+details{margin-top:20px;border-top:1px solid var(--border);padding-top:14px}
+summary{cursor:pointer;color:var(--primary);font-size:13.5px;font-weight:700;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'▸ ';font-size:11px}
+details[open] summary::before{content:'▾ '}
+details .body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:12px}
+details .body b{color:var(--text)}
+details ol{padding-left:20px;margin:8px 0}details li{margin-bottom:6px}
+code{background:#f0f2f0;padding:2px 6px;border-radius:6px;font-size:12.5px}
+.steps{background:#f7f9f8;border:1px solid var(--border);border-radius:14px;padding:16px 18px;font-size:14px;line-height:1.6}
+.steps ol{padding-left:20px;margin:8px 0 0}.steps li{margin-bottom:7px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<div class="card">
-  <a href="index.html" style="color:var(--primary);font-size:14px;text-decoration:none;font-weight:700">← Voltar ao app</a>
-  <h1 style="margin-top:14px">Trocar <span>senha</span></h1>
-  <p>Esta página gera o arquivo <code>auth.json</code>, que guarda o token do GitHub <b>cifrado</b> com a sua senha (AES-GCM 256 + PBKDF2). Tudo acontece aqui no seu navegador — nada é enviado para lugar algum.</p>
-
-  <div class="warn">
-    <b>É necessário ter o token de acesso do GitHub em mãos.</b> Sem ele não é possível trocar a senha, porque é justamente o token que precisa ser cifrado com a senha nova.
-  </div>
-  <div class="warn" style="margin-top:12px">
-    A força da proteção é a força da senha. Quem baixar o <code>auth.json</code> pode tentar adivinhá-la offline. Use <b>12 caracteres ou mais</b>, sem palavras óbvias nem datas.
-  </div>
+<div id="form" class="card">
+  <a class="back" href="index.html">← Voltar</a>
+  <h1>Trocar <span>senha</span></h1>
+  <p class="lead">Escolha a senha nova que você vai usar para entrar.</p>
 
   <label>Usuário</label>
   <input id="user" class="field" placeholder="pamela" autocomplete="off">
 
   <label>Nova senha</label>
-  <input id="p1" class="field" type="password" placeholder="mínimo 8 caracteres" autocomplete="new-password" oninput="strength()">
+  <div class="hint">Use 12 caracteres ou mais. Evite nomes e datas.</div>
+  <input id="p1" class="field" type="password" placeholder="digite a nova senha" autocomplete="new-password" oninput="strength()">
   <div id="meter" class="meter"></div>
 
   <label>Repetir a nova senha</label>
-  <input id="p2" class="field" type="password" autocomplete="new-password">
+  <input id="p2" class="field" type="password" placeholder="digite novamente" autocomplete="new-password">
 
-  <label>Token do GitHub (fine-grained, Contents: Read and write)</label>
-  <input id="token" class="field" type="password" placeholder="github_pat_..." autocomplete="off">
+  <label>Chave de acesso</label>
+  <div class="hint">É o código longo que começa com <code>github_pat_</code>. Sem ele não é possível trocar a senha.</div>
+  <input id="token" class="field" type="password" placeholder="cole a chave aqui" autocomplete="off">
 
-  <div style="margin-top:22px"><button id="go" class="btn btn-primary" onclick="gen()">Gerar auth.json</button></div>
+  <div style="margin-top:24px"><button id="go" class="btn btn-primary" style="width:100%" onclick="gen()">Continuar</button></div>
   <p id="err" class="err hidden"></p>
+
+  <details>
+    <summary>Ver detalhes</summary>
+    <div class="body">
+      <p><b>Por que a chave é necessária?</b><br>
+      A sua senha não é guardada em lugar nenhum — nem aqui, nem no servidor. Ela serve apenas para embaralhar a chave de acesso, que é o que realmente abre suas informações. Trocar a senha significa embaralhar essa chave de novo, e para isso ela precisa estar em mãos.</p>
+      <p><b>Isso é seguro?</b><br>
+      Sim. O embaralhamento acontece dentro do seu navegador e nada é enviado para a internet. A chave nunca fica legível: quem não souber a senha vê apenas um texto sem sentido. Por isso, a força da proteção é a força da senha — uma senha curta ou óbvia é o único ponto fraco possível.</p>
+      <p><b>E se eu esquecer a senha?</b><br>
+      Não existe recuperação automática, justamente porque a senha não fica armazenada. O caminho é voltar aqui com a chave de acesso e definir uma senha nova.</p>
+      <p><b>Detalhe técnico</b><br>
+      A chave é cifrada com AES-GCM de 256 bits. A chave de cifra é derivada da senha por PBKDF2-SHA256 com 600.000 iterações e sal aleatório de 16 bytes. O resultado é gravado no arquivo <code>auth.json</code>, servido junto do site. Toda a operação usa a WebCrypto API nativa do navegador.</p>
+    </div>
+  </details>
 </div>
 
 <div id="out" class="card hidden">
-  <h1>Pronto</h1>
-  <p>Agora coloque este arquivo na <b>raiz do repositório público</b> (<code>nutri-app</code>), com o nome exato <code>auth.json</code>.</p>
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px">
-    <button class="btn btn-primary" onclick="dl()">Baixar auth.json</button>
-    <button class="btn btn-light" onclick="copy()">Copiar conteúdo</button>
+  <h1>Senha <span>pronta</span></h1>
+  <p class="lead">Falta só um passo: salvar o arquivo gerado no lugar do antigo. Depois disso, a senha nova já vale.</p>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 4px">
+    <button class="btn btn-primary" onclick="dl()">Baixar arquivo</button>
+    <button class="btn btn-light" onclick="copy()">Copiar</button>
   </div>
   <p id="okmsg" class="ok hidden"></p>
-  <label>Conteúdo gerado</label>
-  <textarea id="json" class="field" readonly onclick="this.select()"></textarea>
-  <p style="font-size:13px">Este conteúdo é seguro de compartilhar em comparação ao token puro — ele está cifrado. Mesmo assim, não o publique fora do necessário.</p>
-  <ol style="font-size:14px">
-    <li>Abra <code>github.com/lucasramos45/nutri-app</code></li>
-    <li><b>Add file</b> → <b>Upload files</b> (ou <b>Create new file</b> e cole o conteúdo)</li>
-    <li>Nome do arquivo: <code>auth.json</code></li>
-    <li><b>Commit changes</b></li>
-  </ol>
-  <p>Depois disso, o login no site passa a ser o usuário e a senha que você definiu aqui.</p>
+
+  <div class="steps" style="margin-top:18px">
+    <b>Onde salvar</b>
+    <ol>
+      <li>Abra <code>github.com/lucasramos45/nutri-app</code></li>
+      <li>Clique em <b>Add file</b> → <b>Upload files</b></li>
+      <li>Arraste o arquivo baixado e confirme em <b>Commit changes</b></li>
+    </ol>
+    Se preferir, envie o arquivo para quem cuida do site.
+  </div>
+
+  <div style="margin-top:20px"><a class="back" href="index.html">← Voltar ao app</a></div>
+
+  <details>
+    <summary>Ver o conteúdo gerado</summary>
+    <div class="body">
+      <p>Este é o arquivo <code>auth.json</code>. A chave de acesso está aqui dentro, embaralhada — sem a senha, este texto não serve para nada.</p>
+      <textarea id="json" class="field" readonly onclick="this.select()"></textarea>
+    </div>
+  </details>
 </div>
 
 </div>
@@ -92,7 +122,7 @@ function strength(){
  if(v.length>=8)s++; if(v.length>=12)s++; if(v.length>=16)s++;
  if(/[a-z]/.test(v)&&/[A-Z]/.test(v))s++; if(/\d/.test(v))s++; if(/[^\w]/.test(v))s++;
  const t=['muito fraca','fraca','razoável','boa','forte','muito forte'][Math.min(s,5)];
- m.textContent=`Força da senha: ${t} (${v.length} caracteres)`;
+ m.textContent=`Senha ${t} — ${v.length} caracteres`;
  m.style.color=s<=2?'var(--danger)':s<=3?'#a07c2e':'var(--ok)';
 }
 
@@ -107,30 +137,29 @@ async function gen(){
  if(!user)return fail('Informe o usuário.');
  if(p1.length<8)return fail('A senha precisa de pelo menos 8 caracteres.');
  if(p1!==p2)return fail('As duas senhas não são iguais.');
- if(!token)return fail('Cole o token do GitHub.');
- if(!/^(github_pat_|ghp_)/.test(token))return fail('Isso não parece um token do GitHub (deve começar com github_pat_ ou ghp_).');
+ if(!token)return fail('Cole a chave de acesso.');
+ if(!/^(github_pat_|ghp_)/.test(token))return fail('Essa chave não parece certa — ela começa com github_pat_.');
 
- btn.disabled=true;btn.textContent='Cifrando…';
+ btn.disabled=true;btn.textContent='Um instante…';
  try{
   const salt=crypto.getRandomValues(new Uint8Array(16));
   const iv=crypto.getRandomValues(new Uint8Array(12));
   const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(p1),'PBKDF2',false,['deriveKey']);
   const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:ITER,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt']);
   const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(token));
-  const out={user,salt:b64(salt),iv:b64(iv),iterations:ITER,token:b64(ct)};
-  document.getElementById('json').value=JSON.stringify(out,null,2);
-  document.getElementById('out').classList.remove('hidden');
+  document.getElementById('json').value=JSON.stringify({user,salt:b64(salt),iv:b64(iv),iterations:ITER,token:b64(ct)},null,2);
   document.getElementById('token').value='';
-  document.getElementById('out').scrollIntoView({behavior:'smooth'});
- }catch(e){fail('Falha ao cifrar: '+e.message)}
- finally{btn.disabled=false;btn.textContent='Gerar auth.json'}
+  document.getElementById('form').classList.add('hidden');
+  document.getElementById('out').classList.remove('hidden');
+ }catch(e){fail('Não foi possível concluir: '+e.message)}
+ finally{btn.disabled=false;btn.textContent='Continuar'}
 }
 
 function dl(){
  const a=document.createElement('a');
  a.href=URL.createObjectURL(new Blob([document.getElementById('json').value],{type:'application/json'}));
  a.download='auth.json';a.click();URL.revokeObjectURL(a.href);
- msg('Arquivo baixado. Envie ele para o repositório nutri-app.');
+ msg('Arquivo baixado.');
 }
 function copy(){navigator.clipboard.writeText(document.getElementById('json').value).then(()=>msg('Conteúdo copiado.'))}
 function msg(t){const o=document.getElementById('okmsg');o.textContent=t;o.classList.remove('hidden')}
