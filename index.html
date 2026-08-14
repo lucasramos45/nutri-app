@@ -20,6 +20,14 @@ header{height:72px;background:#fff;border-bottom:1px solid var(--border);display
 .categories{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}.chip{border:1px solid var(--border);background:#fff;padding:9px 13px;border-radius:999px;cursor:pointer}.chip:hover{border-color:var(--primary);color:var(--primary)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}.card{background:#fff;border:1px solid var(--border);border-radius:17px;padding:20px}.card h3{margin:0 0 10px;font-size:17px}.card p{color:#55645c;line-height:1.55}.meta{font-size:12px;color:var(--muted);margin-bottom:9px}.actions{display:flex;gap:7px;margin-top:14px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}
 .form-card{max-width:760px;background:#fff;border:1px solid var(--border);border-radius:18px;padding:24px}.textarea{min-height:190px;resize:vertical}.empty{padding:35px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--border);border-radius:17px}
+.userbox{position:relative}#userbtn{display:flex;align-items:center;gap:8px}
+.avatar{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:12px;text-transform:uppercase}
+.menu{position:absolute;right:0;top:calc(100% + 8px);width:245px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 34px #29463822;padding:7px;z-index:20}
+.menu-head{font-size:12px;color:var(--muted);padding:8px 10px 10px}
+.menu-item{display:block;width:100%;text-align:left;border:0;background:none;padding:10px;border-radius:9px;cursor:pointer;font-weight:700;font-size:14px;color:var(--text);text-decoration:none}
+.menu-item:hover{background:var(--primary2);color:var(--primary)}.menu-item.danger:hover{background:#f8e7e7;color:var(--danger)}
+.menu-note{font-size:11.5px;color:var(--muted);padding:2px 10px 8px;line-height:1.45}
+.menu-sep{border-top:1px solid var(--border);margin:5px 0}
 @media(max-width:760px){aside{display:none}main{padding:25px 18px}.hero h1{font-size:26px}.search{flex-direction:column}header{padding:0 18px}.grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -42,7 +50,18 @@ header{height:72px;background:#fff;border-bottom:1px solid var(--border);display
   <div class="logo">Nutri <span>Materno-Infantil</span></div>
   <div style="display:flex;align-items:center;gap:14px">
     <span id="sync" class="meta" style="margin:0"></span>
-    <button class="btn btn-light" onclick="logout()">Sair</button>
+    <div class="userbox">
+      <button class="btn btn-light" onclick="toggleMenu(event)" aria-haspopup="true" id="userbtn">
+        <span class="avatar" id="avatar">?</span><span id="username">usuário</span> <span style="font-size:11px">▾</span>
+      </button>
+      <div id="usermenu" class="menu hidden">
+        <div class="menu-head">Conectada como <b id="username2">usuário</b></div>
+        <a class="menu-item" href="setup.html">🔑 Trocar senha</a>
+        <div class="menu-note">Exige o token de acesso do GitHub.</div>
+        <div class="menu-sep"></div>
+        <button class="menu-item danger" onclick="logout()">↩ Sair</button>
+      </div>
+    </div>
   </div>
 </header>
 <div class="app">
@@ -70,7 +89,7 @@ header{height:72px;background:#fff;border-bottom:1px solid var(--border);display
    Para trocar usuário/senha/token, gere um novo auth.json com o setup.html. */
 const FILE='dados.json', BRANCH='main', CFG='nutri_mi_cfg_v1';
 const DATA_REPO='lucasramos45/nutri-dados';
-const GH={repo:DATA_REPO,token:'',sha:null};
+const GH={repo:DATA_REPO,token:'',user:'',sha:null};
 let ITEMS=[], queue=Promise.resolve();
 
 const DEMO=[
@@ -146,7 +165,7 @@ async function unlock(user,pass){
   token=new TextDecoder().decode(plain);
  }catch(e){throw new Error('Usuário ou senha inválidos.')}
  if(!same)throw new Error('Usuário ou senha inválidos.');
- return token;
+ return {token,user:a.user};
 }
 
 async function login(){
@@ -156,22 +175,36 @@ async function login(){
  if(!user.trim()||!pass){err.textContent='Informe o usuário e a senha.';err.classList.remove('hidden');return}
  btn.disabled=true;btn.textContent='Entrando…';
  try{
-  GH.token=await unlock(user,pass);
-  GH.repo=DATA_REPO;
+  const cred=await unlock(user,pass);
+  GH.token=cred.token;GH.user=cred.user;GH.repo=DATA_REPO;
   await pull();
-  localStorage.setItem(CFG,JSON.stringify({token:GH.token}));
+  localStorage.setItem(CFG,JSON.stringify({token:GH.token,user:GH.user}));
   openSite();
  }catch(e){err.textContent=e.message;err.classList.remove('hidden')}
  finally{btn.disabled=false;btn.textContent='Entrar'}
 }
-function openSite(){document.getElementById('login').classList.add('hidden');document.getElementById('site').classList.remove('hidden');sync(`${ITEMS.length} registros`);showHome()}
+function openSite(){
+ document.getElementById('login').classList.add('hidden');
+ document.getElementById('site').classList.remove('hidden');
+ const u=GH.user||'usuário';
+ document.getElementById('username').textContent=u;
+ document.getElementById('username2').textContent=u;
+ document.getElementById('avatar').textContent=u.charAt(0);
+ sync(`${ITEMS.length} registros`);showHome();
+}
+function toggleMenu(e){e.stopPropagation();document.getElementById('usermenu').classList.toggle('hidden')}
+document.addEventListener('click',e=>{
+ const m=document.getElementById('usermenu');
+ if(m&&!m.classList.contains('hidden')&&!e.target.closest('.userbox'))m.classList.add('hidden');
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('usermenu')?.classList.add('hidden')});
 function logout(){localStorage.removeItem(CFG);location.reload()}
 
 /* Reconecta automaticamente se o token já estiver decifrado neste navegador. */
 (async()=>{
  const c=localStorage.getItem(CFG);if(!c)return;
  try{
-  GH.token=JSON.parse(c).token;GH.repo=DATA_REPO;
+  const s=JSON.parse(c);GH.token=s.token;GH.user=s.user||'';GH.repo=DATA_REPO;
   await pull();openSite();
  }catch(e){
   localStorage.removeItem(CFG);

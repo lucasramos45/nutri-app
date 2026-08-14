@@ -31,21 +31,25 @@ ol{line-height:1.75;padding-left:22px}
 <div class="wrap">
 
 <div class="card">
-  <h1>Configurar <span>acesso</span></h1>
+  <a href="index.html" style="color:var(--primary);font-size:14px;text-decoration:none;font-weight:700">← Voltar ao app</a>
+  <h1 style="margin-top:14px">Trocar <span>senha</span></h1>
   <p>Esta página gera o arquivo <code>auth.json</code>, que guarda o token do GitHub <b>cifrado</b> com a sua senha (AES-GCM 256 + PBKDF2). Tudo acontece aqui no seu navegador — nada é enviado para lugar algum.</p>
 
   <div class="warn">
+    <b>É necessário ter o token de acesso do GitHub em mãos.</b> Sem ele não é possível trocar a senha, porque é justamente o token que precisa ser cifrado com a senha nova.
+  </div>
+  <div class="warn" style="margin-top:12px">
     A força da proteção é a força da senha. Quem baixar o <code>auth.json</code> pode tentar adivinhá-la offline. Use <b>12 caracteres ou mais</b>, sem palavras óbvias nem datas.
   </div>
 
   <label>Usuário</label>
   <input id="user" class="field" placeholder="pamela" autocomplete="off">
 
-  <label>Senha</label>
+  <label>Nova senha</label>
   <input id="p1" class="field" type="password" placeholder="mínimo 8 caracteres" autocomplete="new-password" oninput="strength()">
   <div id="meter" class="meter"></div>
 
-  <label>Repetir a senha</label>
+  <label>Repetir a nova senha</label>
   <input id="p2" class="field" type="password" autocomplete="new-password">
 
   <label>Token do GitHub (fine-grained, Contents: Read and write)</label>
