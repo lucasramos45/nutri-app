@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pamela Souza | Nutri Materno Infantil</title>
+<style>
+:root{--bg:#f7f8f6;--card:#fff;--text:#26332d;--muted:#718078;--primary:#5f8d78;--primary2:#e5f0ea;--border:#e3e9e5;--danger:#b85c5c}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea,select{font:inherit}.hidden{display:none!important}
+.login{min-height:100vh;display:grid;place-items:center;padding:20px}.login-card{width:min(430px,100%);background:var(--card);padding:36px;border:1px solid var(--border);border-radius:24px;box-shadow:0 15px 45px #29463812}
+.logo{font-weight:800;font-size:24px}.logo span{color:var(--primary)}.login p{color:var(--muted);line-height:1.5}
+label{display:block;font-size:13px;font-weight:700;margin:16px 0 7px}.field{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px 14px;outline:none;background:#fff}.field:focus{border-color:var(--primary)}
+.btn{border:0;border-radius:12px;padding:11px 16px;cursor:pointer;font-weight:700}.btn-primary{background:var(--primary);color:#fff}.btn-light{background:var(--primary2);color:var(--primary)}.btn-danger{background:#f8e7e7;color:var(--danger)}
+header{height:72px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:5}
+.app{display:flex;min-height:calc(100vh - 72px)}aside{width:240px;border-right:1px solid var(--border);padding:24px 16px;background:#fff}main{flex:1;padding:34px 5%;max-width:1200px}
+.nav{display:block;width:100%;text-align:left;border:0;background:none;padding:11px 12px;border-radius:10px;cursor:pointer;color:var(--text);margin-bottom:4px}.nav:hover,.nav.active{background:var(--primary2);color:var(--primary)}
+.hero{margin-bottom:26px}.hero h1{font-size:32px;margin:0 0 8px}.hero p{color:var(--muted);margin:0}
+.search{display:flex;gap:10px;margin:22px 0}.search input{flex:1;font-size:17px;padding:16px;border-radius:15px;border:1px solid var(--border)}
+.categories{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}.chip{border:1px solid var(--border);background:#fff;padding:9px 13px;border-radius:999px;cursor:pointer}.chip:hover{border-color:var(--primary);color:var(--primary)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}.card{background:#fff;border:1px solid var(--border);border-radius:17px;padding:20px}.card h3{margin:0 0 10px;font-size:17px}.card p{color:#55645c;line-height:1.55}.meta{font-size:12px;color:var(--muted);margin-bottom:9px}.actions{display:flex;gap:7px;margin-top:14px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}
+.form-card{max-width:760px;background:#fff;border:1px solid var(--border);border-radius:18px;padding:24px}.textarea{min-height:190px;resize:vertical}.empty{padding:35px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--border);border-radius:17px}
+@media(max-width:760px){aside{display:none}main{padding:25px 18px}.hero h1{font-size:26px}.search{flex-direction:column}header{padding:0 18px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section id="login" class="login">
+  <div class="login-card">
+    <div class="logo">Nutri <span>Materno-Infantil</span></div>
+    <p>Seu banco pessoal de perguntas e respostas para consultas rápidas.</p>
+    <label>Repositório de dados</label>
+    <input id="ghrepo" class="field" placeholder="usuario/nome-do-repositorio" autocomplete="off">
+    <label>Token de acesso</label>
+    <input id="ghtoken" class="field" type="password" placeholder="github_pat_..." onkeydown="if(event.key==='Enter')login()">
+    <button id="loginbtn" class="btn btn-primary" style="width:100%;margin-top:16px" onclick="login()">Entrar</button>
+    <p id="loginerr" class="hidden" style="color:var(--danger);font-size:13px;margin:12px 0 0"></p>
+    <small style="display:block;margin-top:14px;color:#718078">O token é a sua senha: fica guardado apenas neste navegador e nunca no site. Use um token <i>fine-grained</i> com permissão <b>Contents: Read and write</b> somente no repositório acima.</small>
+  </div>
+</section>
+
+<div id="site" class="hidden">
+<header>
+  <div class="logo">Nutri <span>Materno-Infantil</span></div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <span id="sync" class="meta" style="margin:0"></span>
+    <button class="btn btn-light" onclick="logout()">Sair</button>
+  </div>
+</header>
+<div class="app">
+<aside>
+  <button class="nav active" onclick="showHome()">⌂ Início</button>
+  <button class="nav" onclick="showAll()">▦ Todas as perguntas</button>
+  <button class="nav" onclick="showForm()">＋ Nova pergunta</button>
+  <hr style="border:0;border-top:1px solid var(--border);margin:18px 0">
+  <div style="font-size:12px;color:var(--muted);padding:0 12px">CATEGORIAS</div>
+  <button class="nav" onclick="searchCat('Gestação')">Gestação</button>
+  <button class="nav" onclick="searchCat('Diabetes gestacional')">Diabetes gestacional</button>
+  <button class="nav" onclick="searchCat('Amamentação')">Amamentação</button>
+  <button class="nav" onclick="searchCat('Introdução alimentar')">Introdução alimentar</button>
+  <button class="nav" onclick="searchCat('Alimentação infantil')">Alimentação infantil</button>
+  <button class="nav" onclick="searchCat('Suplementação')">Suplementação</button>
+</aside>
+<main id="main"></main>
+</div>
+</div>
+
+<script>
+/* ===== Armazenamento: arquivo dados.json dentro do próprio repositório GitHub ===== */
+const FILE='dados.json', BRANCH='main', CFG='nutri_mi_cfg_v1';
+const GH={repo:'',token:'',sha:null};
+let ITEMS=[], queue=Promise.resolve();
+
+const DEMO=[
+ {id:1,cat:'Diabetes gestacional',q:'Quais pontos devo conferir quando surge uma dúvida sobre diabetes gestacional?',a:'Exemplo de registro. Substitua este texto pela orientação técnica que você utiliza e pela referência correspondente. Este conteúdo é apenas um modelo do sistema.',tags:'diabetes gestacional, glicemia, gestação',source:'Adicionar fonte/referência'},
+ {id:2,cat:'Introdução alimentar',q:'Como registrar uma dúvida sobre a introdução alimentar?',a:'Exemplo de registro. Cadastre aqui a sua resposta técnica, observações práticas e a fonte utilizada.',tags:'introdução alimentar, bebê, alimentação',source:'Adicionar fonte/referência'},
+ {id:3,cat:'Amamentação',q:'Onde guardar orientações importantes sobre amamentação?',a:'Use este campo para guardar a resposta que você revisou, juntamente com sua fonte ou protocolo.',tags:'amamentação, leite materno',source:'Adicionar fonte/referência'}
+];
+/* base64 <-> texto preservando acentos */
+function b64enc(s){return btoa(String.fromCharCode(...new TextEncoder().encode(s)))}
+function b64dec(s){return new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g,'')),c=>c.charCodeAt(0)))}
+
+async function api(method,body){
+ const r=await fetch(`https://api.github.com/repos/${GH.repo}/contents/${FILE}`+(method==='GET'?`?ref=${BRANCH}&t=${Date.now()}`:''),
+  {method,headers:{Authorization:`Bearer ${GH.token}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},
+   body:body?JSON.stringify(body):undefined,cache:'no-store'});
+ if(r.status===404)return null;
+ if(r.status===401||r.status===403)throw new Error('Token inválido ou sem permissão de escrita neste repositório.');
+ if(r.status===409||r.status===422)throw new Error('O arquivo mudou em outro lugar. Recarregue a página antes de salvar.');
+ if(!r.ok)throw new Error(`Erro do GitHub (${r.status}). Verifique o repositório e a conexão.`);
+ return r.json();
+}
+
+async function pull(){
+ const f=await api('GET');
+ if(!f){ITEMS=DEMO.slice();GH.sha=null;await push('cria dados.json');return}
+ GH.sha=f.sha;
+ try{const p=JSON.parse(b64dec(f.content));ITEMS=Array.isArray(p)?p:[]}
+ catch(e){throw new Error('O arquivo dados.json existe mas não é um JSON válido.')}
+}
+
+async function push(msg){
+ const res=await api('PUT',{message:msg,content:b64enc(JSON.stringify(ITEMS,null,2)),branch:BRANCH,...(GH.sha?{sha:GH.sha}:{})});
+ GH.sha=res.content.sha;
+}
+
+function sync(t,err){const el=document.getElementById('sync');if(el){el.textContent=t;el.style.color=err?'var(--danger)':'var(--muted)'}}
+
+function data(){return ITEMS}
+/* Salva em memória e envia ao GitHub; desfaz a alteração local se o envio falhar. */
+function save(x){
+ const prev=ITEMS;ITEMS=x;sync('Salvando…');
+ queue=queue.then(()=>push('atualiza perguntas e respostas'))
+  .then(()=>sync('Salvo no GitHub'))
+  .catch(e=>{ITEMS=prev;sync('Falha ao salvar',1);alert(e.message+'\n\nA alteração não foi salva.');refresh()});
+ return queue;
+}
+function refresh(){showHome()}
+
+async function login(){
+ const btn=document.getElementById('loginbtn'),err=document.getElementById('loginerr');
+ GH.repo=document.getElementById('ghrepo').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\/+$/,'');
+ GH.token=document.getElementById('ghtoken').value.trim();
+ err.classList.add('hidden');
+ if(!/^[\w.-]+\/[\w.-]+$/.test(GH.repo)||!GH.token){err.textContent='Informe o repositório no formato usuario/repositorio e o token.';err.classList.remove('hidden');return}
+ btn.disabled=true;btn.textContent='Conectando…';
+ try{
+  await pull();
+  localStorage.setItem(CFG,JSON.stringify({repo:GH.repo,token:GH.token}));
+  openSite();
+ }catch(e){err.textContent=e.message;err.classList.remove('hidden')}
+ finally{btn.disabled=false;btn.textContent='Entrar'}
+}
+function openSite(){document.getElementById('login').classList.add('hidden');document.getElementById('site').classList.remove('hidden');sync(`${ITEMS.length} registros`);showHome()}
+function logout(){localStorage.removeItem(CFG);location.reload()}
+
+/* Reconecta automaticamente se o token já estiver guardado neste navegador. */
+(async()=>{
+ const c=localStorage.getItem(CFG);if(!c)return;
+ try{
+  const {repo,token}=JSON.parse(c);GH.repo=repo;GH.token=token;
+  await pull();openSite();
+ }catch(e){
+  localStorage.removeItem(CFG);
+  const el=document.getElementById('loginerr');el.textContent=e.message;el.classList.remove('hidden');
+ }
+})();
+
+function shell(title,sub,body){document.getElementById('main').innerHTML=`<div class="topbar"><div><h1 style="margin:0;font-size:25px">${title}</h1><p style="color:var(--muted);margin:5px 0">${sub}</p></div><button class="btn btn-primary" onclick="showForm()">＋ Nova pergunta</button></div>${body}`}
+function showHome(){
+ const cats=['Gestação','Diabetes gestacional','Amamentação','Introdução alimentar','Alimentação infantil','Suplementação'];
+ shell('Olá! 👋','Pesquise uma palavra-chave ou descreva rapidamente a sua dúvida.',
+ `<div class="search"><input id="search" placeholder="Ex.: diabetes gestacional, ferro, mel, glicemia..." onkeydown="if(event.key==='Enter')doSearch()"><button class="btn btn-primary" onclick="doSearch()">Pesquisar</button></div>
+ <div class="categories">${cats.map(c=>`<button class="chip" onclick="searchCat('${c}')">${c}</button>`).join('')}</div>
+ <div id="results"></div>`);
+ renderResults(data().slice(0,6),'Perguntas recentes');
+}
+function doSearch(){let q=document.getElementById('search').value.trim().toLowerCase();if(!q){renderResults(data().slice(0,6),'Perguntas recentes');return}let terms=q.split(/\s+/);let r=data().filter(x=>terms.some(t=>(x.q+' '+x.a+' '+x.tags+' '+x.cat).toLowerCase().includes(t)));renderResults(r,`Resultados para “${q}”`)}
+function searchCat(cat){showHome();document.getElementById('search').value=cat;let r=data().filter(x=>x.cat===cat);renderResults(r,cat)}
+function showAll(){shell('Todas as perguntas','Seu banco de conhecimento.','<div id="results"></div>');renderResults(data(),'Todas as perguntas')}
+function renderResults(items,title){let el=document.getElementById('results');if(!el)return;el.innerHTML=`<h2 style="font-size:18px">${title}</h2>`+(items.length?`<div class="grid">${items.map(card).join('')}</div>`:`<div class="empty">Nenhum conteúdo encontrado.<br><br>Você pode cadastrar uma nova pergunta.</div>`)}
+function card(x){return `<article class="card"><div class="meta">${x.cat}</div><h3>${x.q}</h3><p>${x.a.length>180?x.a.slice(0,180)+'…':x.a}</p><div class="meta">🔎 ${x.tags}</div><div class="actions"><button class="btn btn-light" onclick="view(${x.id})">Ver resposta</button><button class="btn" style="background:#f4f5f4" onclick="edit(${x.id})">Editar</button></div></article>`}
+function view(id){let x=data().find(y=>y.id===id);shell(x.cat,x.q,`<div class="form-card"><div class="meta">RESPOSTA</div><div style="white-space:pre-wrap;line-height:1.7">${esc(x.a)}</div><hr style="border:0;border-top:1px solid var(--border);margin:22px 0"><b>Palavras-chave</b><p class="meta">${esc(x.tags)}</p><b>Fonte/referência</b><p class="meta">${esc(x.source||'Não cadastrada')}</p><div class="actions"><button class="btn btn-light" onclick="edit(${x.id})">Editar</button><button class="btn btn-danger" onclick="removeItem(${x.id})">Excluir</button></div></div>`)}
+function showForm(id=null){let x=id?data().find(y=>y.id===id):{cat:'',q:'',a:'',tags:'',source:''};shell(id?'Editar pergunta':'Nova pergunta','Cadastre uma dúvida para encontrar rapidamente no futuro.',`<div class="form-card">
+<label>Categoria</label><select id="fcat" class="field"><option>Gestação</option><option>Diabetes gestacional</option><option>Amamentação</option><option>Introdução alimentar</option><option>Alimentação infantil</option><option>Avaliação nutricional</option><option>Suplementação</option><option>Outros</option></select>
+<label>Pergunta</label><input id="fq" class="field" value="${escAttr(x.q)}" placeholder="Ex.: Pode oferecer mel para menores de 1 ano?">
+<label>Resposta</label><textarea id="fa" class="field textarea" placeholder="Digite a resposta técnica revisada...">${esc(x.a)}</textarea>
+<label>Palavras-chave</label><input id="ftags" class="field" value="${escAttr(x.tags)}" placeholder="Ex.: mel, bebê, botulismo, introdução alimentar">
+<label>Fonte / referência</label><input id="fsource" class="field" value="${escAttr(x.source)}" placeholder="Ex.: diretriz, protocolo, artigo...">
+<div class="actions"><button class="btn btn-primary" onclick="saveForm(${id||'null'})">Salvar</button><button class="btn btn-light" onclick="showHome()">Cancelar</button></div></div>`);
+document.getElementById('fcat').value=x.cat||'Gestação'}
+function saveForm(id){let arr=data();let obj={id:id||Date.now(),cat:document.getElementById('fcat').value,q:document.getElementById('fq').value.trim(),a:document.getElementById('fa').value.trim(),tags:document.getElementById('ftags').value.trim(),source:document.getElementById('fsource').value.trim()};if(!obj.q||!obj.a){alert('Preencha a pergunta e a resposta.');return}if(id){let i=arr.findIndex(x=>x.id===id);arr[i]=obj}else arr.unshift(obj);save(arr);view(obj.id)}
+function edit(id){showForm(id)}
+function removeItem(id){if(confirm('Excluir esta pergunta?')){save(data().filter(x=>x.id!==id));showAll()}}
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function escAttr(s){return esc(s).replace(/\n/g,'&#10;')}
+</script>
+</body>
+</html>
