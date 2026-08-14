@@ -67,11 +67,11 @@ code{background:#f0f2f0;padding:2px 6px;border-radius:6px;font-size:12.5px}
     <summary>Ver detalhes</summary>
     <div class="body">
       <p><b>Por que a chave é necessária?</b><br>
-      A sua senha não é guardada em lugar nenhum — nem aqui, nem no servidor. Ela serve apenas para embaralhar a chave de acesso, que é o que realmente abre suas informações. Trocar a senha significa embaralhar essa chave de novo, e para isso ela precisa estar em mãos.</p>
+      A senha serve para embaralhar a chave de acesso, que é o que realmente abre as suas informações. Trocar a senha significa embaralhar essa chave outra vez, e para isso ela precisa estar em mãos.</p>
       <p><b>Isso é seguro?</b><br>
       Sim. O embaralhamento acontece dentro do seu navegador e nada é enviado para a internet. A chave nunca fica legível: quem não souber a senha vê apenas um texto sem sentido. Por isso, a força da proteção é a força da senha — uma senha curta ou óbvia é o único ponto fraco possível.</p>
       <p><b>E se eu esquecer a senha?</b><br>
-      Não existe recuperação automática, justamente porque a senha não fica armazenada. O caminho é voltar aqui com a chave de acesso e definir uma senha nova.</p>
+      Não existe recuperação automática. O caminho é voltar aqui com a chave de acesso e definir uma senha nova.</p>
       <p><b>Detalhe técnico</b><br>
       A chave é cifrada com AES-GCM de 256 bits. A chave de cifra é derivada da senha por PBKDF2-SHA256 com 600.000 iterações e sal aleatório de 16 bytes. O resultado é gravado no arquivo <code>auth.json</code>, servido junto do site. Toda a operação usa a WebCrypto API nativa do navegador.</p>
     </div>
