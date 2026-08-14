@@ -28,13 +28,12 @@ header{height:72px;background:#fff;border-bottom:1px solid var(--border);display
   <div class="login-card">
     <div class="logo">Nutri <span>Materno-Infantil</span></div>
     <p>Seu banco pessoal de perguntas e respostas para consultas rápidas.</p>
-    <label>Repositório de dados</label>
-    <input id="ghrepo" class="field" placeholder="usuario/nome-do-repositorio" autocomplete="off">
-    <label>Token de acesso</label>
-    <input id="ghtoken" class="field" type="password" placeholder="github_pat_..." autocomplete="new-password" onkeydown="if(event.key==='Enter')login()">
+    <label>Usuário</label>
+    <input id="user" class="field" autocomplete="username" placeholder="seu usuário">
+    <label>Senha</label>
+    <input id="pass" class="field" type="password" autocomplete="current-password" placeholder="sua senha" onkeydown="if(event.key==='Enter')login()">
     <button id="loginbtn" class="btn btn-primary" style="width:100%;margin-top:16px" onclick="login()">Entrar</button>
     <p id="loginerr" class="hidden" style="color:var(--danger);font-size:13px;margin:12px 0 0"></p>
-    <small style="display:block;margin-top:14px;color:#718078">O token é a sua senha: fica guardado apenas neste navegador e nunca no site. Use um token <i>fine-grained</i> com permissão <b>Contents: Read and write</b> somente no repositório acima.</small>
   </div>
 </section>
 
@@ -65,9 +64,13 @@ header{height:72px;background:#fff;border-bottom:1px solid var(--border);display
 </div>
 
 <script>
-/* ===== Armazenamento: arquivo dados.json dentro do próprio repositório GitHub ===== */
+/* ===== Armazenamento: arquivo dados.json dentro do próprio repositório GitHub =====
+   O token de acesso não vive neste código: ele fica cifrado em auth.json (AES-GCM, chave
+   derivada da senha por PBKDF2) e só é decifrado no navegador, no momento do login.
+   Para trocar usuário/senha/token, gere um novo auth.json com o setup.html. */
 const FILE='dados.json', BRANCH='main', CFG='nutri_mi_cfg_v1';
-const GH={repo:'',token:'',sha:null};
+const DATA_REPO='lucasramos45/nutri-dados';
+const GH={repo:DATA_REPO,token:'',sha:null};
 let ITEMS=[], queue=Promise.resolve();
 
 const DEMO=[
@@ -123,16 +126,40 @@ function save(x){
 }
 function refresh(){showHome()}
 
+/* ===== Login: usuário + senha decifram o token guardado em auth.json ===== */
+const bytes=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+
+async function derive(pass,salt,iter){
+ const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
+ return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+
+async function unlock(user,pass){
+ const r=await fetch(`auth.json?t=${Date.now()}`,{cache:'no-store'});
+ if(!r.ok)throw new Error('Acesso ainda não configurado neste site (auth.json não encontrado).');
+ const a=await r.json();
+ const same=user.trim().toLowerCase()===String(a.user||'').toLowerCase();
+ const key=await derive(pass,bytes(a.salt),a.iterations||600000);
+ let token;
+ try{
+  const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:bytes(a.iv)},key,bytes(a.token));
+  token=new TextDecoder().decode(plain);
+ }catch(e){throw new Error('Usuário ou senha inválidos.')}
+ if(!same)throw new Error('Usuário ou senha inválidos.');
+ return token;
+}
+
 async function login(){
  const btn=document.getElementById('loginbtn'),err=document.getElementById('loginerr');
- GH.repo=document.getElementById('ghrepo').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\/+$/,'');
- GH.token=document.getElementById('ghtoken').value.trim();
+ const user=document.getElementById('user').value,pass=document.getElementById('pass').value;
  err.classList.add('hidden');
- if(!/^[\w.-]+\/[\w.-]+$/.test(GH.repo)||!GH.token){err.textContent='Informe o repositório no formato usuario/repositorio e o token.';err.classList.remove('hidden');return}
- btn.disabled=true;btn.textContent='Conectando…';
+ if(!user.trim()||!pass){err.textContent='Informe o usuário e a senha.';err.classList.remove('hidden');return}
+ btn.disabled=true;btn.textContent='Entrando…';
  try{
+  GH.token=await unlock(user,pass);
+  GH.repo=DATA_REPO;
   await pull();
-  localStorage.setItem(CFG,JSON.stringify({repo:GH.repo,token:GH.token}));
+  localStorage.setItem(CFG,JSON.stringify({token:GH.token}));
   openSite();
  }catch(e){err.textContent=e.message;err.classList.remove('hidden')}
  finally{btn.disabled=false;btn.textContent='Entrar'}
@@ -140,11 +167,11 @@ async function login(){
 function openSite(){document.getElementById('login').classList.add('hidden');document.getElementById('site').classList.remove('hidden');sync(`${ITEMS.length} registros`);showHome()}
 function logout(){localStorage.removeItem(CFG);location.reload()}
 
-/* Reconecta automaticamente se o token já estiver guardado neste navegador. */
+/* Reconecta automaticamente se o token já estiver decifrado neste navegador. */
 (async()=>{
  const c=localStorage.getItem(CFG);if(!c)return;
  try{
-  const {repo,token}=JSON.parse(c);GH.repo=repo;GH.token=token;
+  GH.token=JSON.parse(c).token;GH.repo=DATA_REPO;
   await pull();openSite();
  }catch(e){
   localStorage.removeItem(CFG);
