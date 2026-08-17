@@ -457,14 +457,10 @@
         <button class="nav active" onclick="showHome()">⌂ Início</button>
         <button class="nav" onclick="showAll()">▦ Todas as perguntas</button>
         <button class="nav" onclick="showForm()">＋ Nova pergunta</button>
+        <button class="nav" onclick="showCats()">🏷 Categorias</button>
         <hr style="border:0;border-top:1px solid var(--border);margin:18px 0">
         <div style="font-size:12px;color:var(--muted);padding:0 12px">CATEGORIAS</div>
-        <button class="nav" onclick="searchCat('Gestação')">Gestação</button>
-        <button class="nav" onclick="searchCat('Diabetes gestacional')">Diabetes gestacional</button>
-        <button class="nav" onclick="searchCat('Amamentação')">Amamentação</button>
-        <button class="nav" onclick="searchCat('Introdução alimentar')">Introdução alimentar</button>
-        <button class="nav" onclick="searchCat('Alimentação infantil')">Alimentação infantil</button>
-        <button class="nav" onclick="searchCat('Suplementação')">Suplementação</button>
+        <div id="navcats"></div>
       </aside>
       <main id="main"></main>
     </div>
@@ -485,7 +481,10 @@
     const lerTok = () => localStorage.getItem(TOK) || '';
 
     const GH = { repo: DATA_REPO, token: '', user: LOGIN.user, sha: null };
-    let ITEMS = [], queue = Promise.resolve();
+    let ITEMS = [], CATS = [], queue = Promise.resolve();
+
+    /* Categorias usadas quando o arquivo ainda não tem nenhuma cadastrada. */
+    const DEMO_CATS = ['Gestação', 'Amamentação', 'Introdução Alimentar', 'Alimentação Nutricional', 'Avaliação', 'Suplementação', 'Nutrientes Nutricionais', 'Alergias Alimentares', 'Outros'];
 
     const DEMO = [
       { id: 1, cat: 'Diabetes gestacional', q: 'Quais pontos devo conferir quando surge uma dúvida sobre diabetes gestacional?', a: 'Exemplo de registro. Substitua este texto pela orientação técnica que você utiliza e pela referência correspondente. Este conteúdo é apenas um modelo do sistema.', tags: 'diabetes gestacional, glicemia, gestação', source: 'Adicionar fonte/referência' },
@@ -518,29 +517,55 @@
     async function pull() {
       await api('GET', '');            // confirma que o repositório existe e o token alcança ele
       const f = await contents('GET', null, true);
-      if (!f) { ITEMS = DEMO.slice(); GH.sha = null; await push('cria dados.json'); return }
+      if (!f) { ITEMS = DEMO.slice(); CATS = novasCats(DEMO_CATS); GH.sha = null; await push('cria dados.json'); return }
       GH.sha = f.sha;
-      try { const p = JSON.parse(b64dec(f.content)); ITEMS = Array.isArray(p) ? p : [] }
+      let p;
+      try { p = JSON.parse(b64dec(f.content)) }
       catch (e) { throw new Error('O arquivo dados.json existe mas não é um JSON válido.') }
+      /* Formato antigo: o arquivo era só a lista de perguntas. */
+      ITEMS = Array.isArray(p) ? p : (Array.isArray(p?.items) ? p.items : []);
+      const salvas = Array.isArray(p?.cats) ? p.cats : [];
+      CATS = salvas.length ? salvas.map(c => (typeof c === 'string' ? { id: novoCatId(), name: c } : c))
+        : novasCats(unicos([...DEMO_CATS, ...ITEMS.map(x => x.cat).filter(Boolean)]));
     }
 
+    /* Mantém a primeira grafia de cada nome: as padrão vencem as variações vindas das perguntas. */
+    function unicos(nomes) {
+      const vistos = new Map();
+      for (const n of nomes) { const k = n.trim().toLowerCase(); if (!vistos.has(k)) vistos.set(k, n.trim()) }
+      return [...vistos.values()];
+    }
+
+    /* Ids de categoria não podem colidir quando várias são criadas no mesmo milissegundo. */
+    let seqCat = 0;
+    function novoCatId() { return `c${Date.now()}${(++seqCat).toString(36)}` }
+    function novasCats(nomes) { return nomes.map(n => ({ id: novoCatId(), name: n })) }
+
     async function push(msg) {
-      const res = await contents('PUT', { message: msg, content: b64enc(JSON.stringify(ITEMS, null, 2)), branch: BRANCH, ...(GH.sha ? { sha: GH.sha } : {}) });
+      const conteudo = { cats: CATS, items: ITEMS };
+      const res = await contents('PUT', { message: msg, content: b64enc(JSON.stringify(conteudo, null, 2)), branch: BRANCH, ...(GH.sha ? { sha: GH.sha } : {}) });
       GH.sha = res?.content?.sha || null;
     }
 
     function sync(t, err) { const el = document.getElementById('sync'); if (el) { el.textContent = t; el.style.color = err ? 'var(--danger)' : 'var(--muted)' } }
 
     function data() { return ITEMS }
+    /* Sempre em ordem alfabética (pt-BR, ignorando acentos e maiúsculas), então uma categoria
+       nova já aparece no lugar certo sem precisar reordenar nada na mão. */
+    function cats() { return [...CATS].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })) }
+    function catNames() { return cats().map(c => c.name) }
     /* Salva em memória e envia ao GitHub; desfaz a alteração local se o envio falhar. */
-    function save(x) {
-      const prev = ITEMS; ITEMS = x; sync('Salvando…');
-      queue = queue.then(() => push('atualiza perguntas e respostas'))
+    function save(x, novasCategorias, msg) {
+      const prevI = ITEMS, prevC = CATS;
+      if (x) ITEMS = x;
+      if (novasCategorias) CATS = novasCategorias;
+      sync('Salvando…');
+      queue = queue.then(() => push(msg || 'atualiza perguntas e respostas'))
         .then(() => sync('Salvo no GitHub'))
-        .catch(e => { ITEMS = prev; sync('Falha ao salvar', 1); alert(e.message + '\n\nA alteração não foi salva.'); refresh() });
+        .catch(e => { ITEMS = prevI; CATS = prevC; sync('Falha ao salvar', 1); alert(e.message + '\n\nA alteração não foi salva.'); refresh() });
       return queue;
     }
-    function refresh() { showHome() }
+    function refresh() { renderNavCats(); showHome() }
 
     /* ===== Login: compara usuário e senha com os valores fixos acima ===== */
     /* Mostra o campo da chave só quando este navegador ainda não tem uma guardada. */
@@ -578,7 +603,7 @@
       document.getElementById('username').textContent = u;
       document.getElementById('username2').textContent = u;
       document.getElementById('avatar').textContent = u.charAt(0);
-      sync(`${ITEMS.length} registros`); showHome();
+      sync(`${ITEMS.length} registros`); renderNavCats(); showHome();
     }
     function toggleMenu(e) { e.stopPropagation(); document.getElementById('usermenu').classList.toggle('hidden') }
     document.addEventListener('click', e => {
@@ -608,32 +633,120 @@
 
     function shell(title, sub, body) { document.getElementById('main').innerHTML = `<div class="topbar"><div><h1 style="margin:0;font-size:25px">${title}</h1><p style="color:var(--muted);margin:5px 0">${sub}</p></div><button class="btn btn-primary" onclick="showForm()">＋ Nova pergunta</button></div>${body}` }
     function showHome() {
-      const cats = ['Gestação', 'Diabetes gestacional', 'Amamentação', 'Introdução alimentar', 'Alimentação infantil', 'Suplementação'];
       shell('Olá! 👋', 'Pesquise uma palavra-chave ou descreva rapidamente a sua dúvida.',
         `<div class="search"><input id="search" placeholder="Ex.: diabetes gestacional, ferro, mel, glicemia..." onkeydown="if(event.key==='Enter')doSearch()"><button class="btn btn-primary" onclick="doSearch()">Pesquisar</button></div>
- <div class="categories">${cats.map(c => `<button class="chip" onclick="searchCat('${c}')">${c}</button>`).join('')}</div>
+ <div class="categories">${cats().map(c => `<button class="chip" onclick="searchCatId('${c.id}')">${esc(c.name)}</button>`).join('')}</div>
  <div id="results"></div>`);
       renderResults(data().slice(0, 6), 'Perguntas recentes');
     }
     function doSearch() { let q = document.getElementById('search').value.trim().toLowerCase(); if (!q) { renderResults(data().slice(0, 6), 'Perguntas recentes'); return } let terms = q.split(/\s+/); let r = data().filter(x => terms.some(t => (x.q + ' ' + x.a + ' ' + x.tags + ' ' + x.cat).toLowerCase().includes(t))); renderResults(r, `Resultados para “${q}”`) }
     function searchCat(cat) { showHome(); document.getElementById('search').value = cat; let r = data().filter(x => x.cat === cat); renderResults(r, cat) }
+    function searchCatId(id) { const c = cats().find(y => y.id === id); if (c) searchCat(c.name) }
+    function renderNavCats() {
+      const el = document.getElementById('navcats'); if (!el) return;
+      el.innerHTML = cats().length
+        ? cats().map(c => `<button class="nav" onclick="searchCatId('${c.id}')">${esc(c.name)}</button>`).join('')
+        : `<div class="menu-note">Nenhuma categoria cadastrada.</div>`;
+    }
     function showAll() { shell('Todas as perguntas', 'Seu banco de conhecimento.', '<div id="results"></div>'); renderResults(data(), 'Todas as perguntas') }
     function renderResults(items, title) { let el = document.getElementById('results'); if (!el) return; el.innerHTML = `<h2 style="font-size:18px">${title}</h2>` + (items.length ? `<div class="grid">${items.map(card).join('')}</div>` : `<div class="empty">Nenhum conteúdo encontrado.<br><br>Você pode cadastrar uma nova pergunta.</div>`) }
     function card(x) { return `<article class="card"><div class="meta">${x.cat}</div><h3>${x.q}</h3><p>${x.a.length > 180 ? x.a.slice(0, 180) + '…' : x.a}</p><div class="meta">🔎 ${x.tags}</div><div class="actions"><button class="btn btn-light" onclick="view(${x.id})">Ver resposta</button><button class="btn" style="background:#f4f5f4" onclick="edit(${x.id})">Editar</button></div></article>` }
     function view(id) { let x = data().find(y => y.id === id); shell(x.cat, x.q, `<div class="form-card"><div class="meta">RESPOSTA</div><div style="white-space:pre-wrap;line-height:1.7">${esc(x.a)}</div><hr style="border:0;border-top:1px solid var(--border);margin:22px 0"><b>Palavras-chave</b><p class="meta">${esc(x.tags)}</p><b>Fonte/referência</b><p class="meta">${esc(x.source || 'Não cadastrada')}</p><div class="actions"><button class="btn btn-light" onclick="edit(${x.id})">Editar</button><button class="btn btn-danger" onclick="removeItem(${x.id})">Excluir</button></div></div>`) }
     function showForm(id = null) {
-      let x = id ? data().find(y => y.id === id) : { cat: '', q: '', a: '', tags: '', source: '' }; shell(id ? 'Editar pergunta' : 'Nova pergunta', 'Cadastre uma dúvida para encontrar rapidamente no futuro.', `<div class="form-card">
-<label>Categoria</label><select id="fcat" class="field"><option>Gestação</option><option>Diabetes gestacional</option><option>Amamentação</option><option>Introdução alimentar</option><option>Alimentação infantil</option><option>Avaliação nutricional</option><option>Suplementação</option><option>Outros</option></select>
+      let x = id ? data().find(y => y.id === id) : { cat: '', q: '', a: '', tags: '', source: '' };
+      /* A categoria atual do registro entra na lista mesmo se tiver sido excluída, para não trocar sozinha. */
+      const opcoes = [...new Set([...catNames(), ...(x.cat ? [x.cat] : [])])];
+      shell(id ? 'Editar pergunta' : 'Nova pergunta', 'Cadastre uma dúvida para encontrar rapidamente no futuro.', `<div class="form-card">
+<label>Categoria</label>${opcoes.length ? `<select id="fcat" class="field">${opcoes.map(c => `<option value="${escAttr(c)}">${esc(c)}</option>`).join('')}</select>`
+          : `<input id="fcat" class="field" value="" placeholder="Cadastre uma categoria na tela Categorias">`}
 <label>Pergunta</label><input id="fq" class="field" value="${escAttr(x.q)}" placeholder="Ex.: Pode oferecer mel para menores de 1 ano?">
 <label>Resposta</label><textarea id="fa" class="field textarea" placeholder="Digite a resposta técnica revisada...">${esc(x.a)}</textarea>
 <label>Palavras-chave</label><input id="ftags" class="field" value="${escAttr(x.tags)}" placeholder="Ex.: mel, bebê, botulismo, introdução alimentar">
 <label>Fonte / referência</label><input id="fsource" class="field" value="${escAttr(x.source)}" placeholder="Ex.: diretriz, protocolo, artigo...">
 <div class="actions"><button class="btn btn-primary" onclick="saveForm(${id || 'null'})">Salvar</button><button class="btn btn-light" onclick="showHome()">Cancelar</button></div></div>`);
-      document.getElementById('fcat').value = x.cat || 'Gestação'
+      document.getElementById('fcat').value = x.cat || opcoes[0] || ''
     }
-    function saveForm(id) { let arr = data(); let obj = { id: id || Date.now(), cat: document.getElementById('fcat').value, q: document.getElementById('fq').value.trim(), a: document.getElementById('fa').value.trim(), tags: document.getElementById('ftags').value.trim(), source: document.getElementById('fsource').value.trim() }; if (!obj.q || !obj.a) { alert('Preencha a pergunta e a resposta.'); return } if (id) { let i = arr.findIndex(x => x.id === id); arr[i] = obj } else arr.unshift(obj); save(arr); view(obj.id) }
+    function saveForm(id) { let arr = data(); let obj = { id: id || Date.now(), cat: document.getElementById('fcat').value, q: document.getElementById('fq').value.trim(), a: document.getElementById('fa').value.trim(), tags: document.getElementById('ftags').value.trim(), source: document.getElementById('fsource').value.trim() }; if (!obj.q || !obj.a) { alert('Preencha a pergunta e a resposta.'); return } if (!obj.cat.trim()) { alert('Escolha uma categoria. Cadastre uma na tela Categorias.'); return } if (id) { let i = arr.findIndex(x => x.id === id); arr[i] = obj } else arr.unshift(obj); save(arr); view(obj.id) }
     function edit(id) { showForm(id) }
     function removeItem(id) { if (confirm('Excluir esta pergunta?')) { save(data().filter(x => x.id !== id)); showAll() } }
+    /* ===== CRUD de categorias ===== */
+    let editandoCat = null;               // id da categoria em edição na lista
+
+    function usoCat(nome) { return data().filter(x => x.cat === nome).length }
+    function catDuplicada(nome, ignorarId) {
+      const n = nome.trim().toLowerCase();
+      return cats().some(c => c.id !== ignorarId && c.name.trim().toLowerCase() === n);
+    }
+
+    function showCats() {
+      editandoCat = null;
+      shell('Categorias', 'Organize os assuntos usados nas perguntas.', `<div class="form-card">
+<label for="newcat">Nova categoria</label>
+<div class="search" style="margin:0">
+  <input id="newcat" class="field" placeholder="Ex.: Alergias alimentares" onkeydown="if(event.key==='Enter')addCat()">
+  <button class="btn btn-primary" onclick="addCat()">Adicionar</button>
+</div>
+</div>
+<div id="catlist" style="margin-top:18px"></div>`);
+      renderCatList();
+    }
+
+    function renderCatList() {
+      const el = document.getElementById('catlist'); if (!el) return;
+      if (!cats().length) { el.innerHTML = `<div class="empty">Nenhuma categoria cadastrada.<br><br>Adicione a primeira no campo acima.</div>`; return }
+      el.innerHTML = `<div class="grid">${cats().map(c => {
+        const n = usoCat(c.name);
+        const uso = `${n} ${n === 1 ? 'pergunta' : 'perguntas'}`;
+        if (editandoCat === c.id) return `<article class="card">
+<div class="meta">EDITANDO</div>
+<input id="editcat" class="field" value="${escAttr(c.name)}" onkeydown="if(event.key==='Enter')saveCat('${c.id}');if(event.key==='Escape')cancelCat()">
+<div class="actions"><button class="btn btn-primary" onclick="saveCat('${c.id}')">Salvar</button><button class="btn btn-light" onclick="cancelCat()">Cancelar</button></div></article>`;
+        return `<article class="card">
+<div class="meta">${uso}</div><h3>${esc(c.name)}</h3>
+<div class="actions">
+  <button class="btn btn-light" onclick="searchCatId('${c.id}')">Ver perguntas</button>
+  <button class="btn" style="background:#f4f5f4" onclick="editCat('${c.id}')">Editar</button>
+  <button class="btn btn-danger" onclick="removeCat('${c.id}')">Excluir</button>
+</div></article>`;
+      }).join('')}</div>`;
+      document.getElementById('editcat')?.focus();
+    }
+
+    function addCat() {
+      const inp = document.getElementById('newcat'); const nome = inp.value.trim();
+      if (!nome) { alert('Digite o nome da categoria.'); return }
+      if (catDuplicada(nome)) { alert('Já existe uma categoria com esse nome.'); return }
+      inp.value = '';
+      save(null, [...cats(), { id: novoCatId(), name: nome }], `adiciona categoria ${nome}`);
+      renderNavCats(); renderCatList();
+    }
+
+    function editCat(id) { editandoCat = id; renderCatList() }
+    function cancelCat() { editandoCat = null; renderCatList() }
+
+    /* Renomear precisa arrastar as perguntas junto: elas guardam o nome da categoria, não o id. */
+    function saveCat(id) {
+      const atual = cats().find(c => c.id === id); if (!atual) return;
+      const nome = document.getElementById('editcat').value.trim();
+      if (!nome) { alert('Digite o nome da categoria.'); return }
+      if (catDuplicada(nome, id)) { alert('Já existe uma categoria com esse nome.'); return }
+      editandoCat = null;
+      if (nome === atual.name) { renderCatList(); return }
+      const novasCategorias = cats().map(c => c.id === id ? { ...c, name: nome } : c);
+      const novosItens = data().map(x => x.cat === atual.name ? { ...x, cat: nome } : x);
+      save(novosItens, novasCategorias, `renomeia categoria ${atual.name} para ${nome}`);
+      renderNavCats(); renderCatList();
+    }
+
+    function removeCat(id) {
+      const c = cats().find(y => y.id === id); if (!c) return;
+      const n = usoCat(c.name);
+      if (n) { alert(`“${c.name}” está em uso por ${n} ${n === 1 ? 'pergunta' : 'perguntas'}.\n\nMova essas perguntas para outra categoria antes de excluir.`); return }
+      if (!confirm(`Excluir a categoria “${c.name}”?`)) return;
+      save(null, cats().filter(y => y.id !== id), `remove categoria ${c.name}`);
+      renderNavCats(); renderCatList();
+    }
+
     function esc(s) { return String(s || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])) }
     function escAttr(s) { return esc(s).replace(/\n/g, '&#10;') }
   </script>
