@@ -1,255 +1,654 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pamela Souza | Nutri Materno Infantil</title>
-<style>
-:root{--bg:#f7f8f6;--card:#fff;--text:#26332d;--muted:#718078;--primary:#5f8d78;--primary2:#e5f0ea;--border:#e3e9e5;--danger:#b85c5c}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text)}
-button,input,textarea,select{font:inherit}.hidden{display:none!important}
-.login{min-height:100vh;display:grid;place-items:center;padding:20px}.login-card{width:min(430px,100%);background:var(--card);padding:36px;border:1px solid var(--border);border-radius:24px;box-shadow:0 15px 45px #29463812}
-.logo{font-weight:800;font-size:24px}.logo span{color:var(--primary)}.login p{color:var(--muted);line-height:1.5}
-label{display:block;font-size:13px;font-weight:700;margin:16px 0 7px}.field{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px 14px;outline:none;background:#fff}.field:focus{border-color:var(--primary)}
-.btn{border:0;border-radius:12px;padding:11px 16px;cursor:pointer;font-weight:700}.btn-primary{background:var(--primary);color:#fff}.btn-light{background:var(--primary2);color:var(--primary)}.btn-danger{background:#f8e7e7;color:var(--danger)}
-header{height:72px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:5}
-.app{display:flex;min-height:calc(100vh - 72px)}aside{width:240px;border-right:1px solid var(--border);padding:24px 16px;background:#fff}main{flex:1;padding:34px 5%;max-width:1200px}
-.nav{display:block;width:100%;text-align:left;border:0;background:none;padding:11px 12px;border-radius:10px;cursor:pointer;color:var(--text);margin-bottom:4px}.nav:hover,.nav.active{background:var(--primary2);color:var(--primary)}
-.hero{margin-bottom:26px}.hero h1{font-size:32px;margin:0 0 8px}.hero p{color:var(--muted);margin:0}
-.search{display:flex;gap:10px;margin:22px 0}.search input{flex:1;font-size:17px;padding:16px;border-radius:15px;border:1px solid var(--border)}
-.categories{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}.chip{border:1px solid var(--border);background:#fff;padding:9px 13px;border-radius:999px;cursor:pointer}.chip:hover{border-color:var(--primary);color:var(--primary)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}.card{background:#fff;border:1px solid var(--border);border-radius:17px;padding:20px}.card h3{margin:0 0 10px;font-size:17px}.card p{color:#55645c;line-height:1.55}.meta{font-size:12px;color:var(--muted);margin-bottom:9px}.actions{display:flex;gap:7px;margin-top:14px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}
-.form-card{max-width:760px;background:#fff;border:1px solid var(--border);border-radius:18px;padding:24px}.textarea{min-height:190px;resize:vertical}.empty{padding:35px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--border);border-radius:17px}
-.forgot{margin-top:18px;padding-top:16px;border-top:1px solid var(--border);text-align:center}
-.forgot a{color:var(--primary);font-weight:700;font-size:14px;text-decoration:none}.forgot a:hover{text-decoration:underline}
-.forgot p{font-size:11.5px;color:var(--muted);line-height:1.5;margin:8px 0 0}
-.userbox{position:relative}#userbtn{display:flex;align-items:center;gap:8px}
-.avatar{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:12px;text-transform:uppercase}
-.menu{position:absolute;right:0;top:calc(100% + 8px);width:245px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 34px #29463822;padding:7px;z-index:20}
-.menu-head{font-size:12px;color:var(--muted);padding:8px 10px 10px}
-.menu-item{display:block;width:100%;text-align:left;border:0;background:none;padding:10px;border-radius:9px;cursor:pointer;font-weight:700;font-size:14px;color:var(--text);text-decoration:none}
-.menu-item:hover{background:var(--primary2);color:var(--primary)}.menu-item.danger:hover{background:#f8e7e7;color:var(--danger)}
-.menu-note{font-size:11.5px;color:var(--muted);padding:2px 10px 8px;line-height:1.45}
-.menu-sep{border-top:1px solid var(--border);margin:5px 0}
-@media(max-width:760px){aside{display:none}main{padding:25px 18px}.hero h1{font-size:26px}.search{flex-direction:column}header{padding:0 18px}.grid{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-<section id="login" class="login">
-  <div class="login-card">
-    <div class="logo">Nutri <span>Materno-Infantil</span></div>
-    <p>Seu banco pessoal de perguntas e respostas para consultas rápidas.</p>
-    <label>Usuário</label>
-    <input id="user" class="field" autocomplete="username" placeholder="seu usuário">
-    <label>Senha</label>
-    <input id="pass" class="field" type="password" autocomplete="current-password" placeholder="sua senha" onkeydown="if(event.key==='Enter')login()">
-    <button id="loginbtn" class="btn btn-primary" style="width:100%;margin-top:16px" onclick="login()">Entrar</button>
-    <p id="loginerr" class="hidden" style="color:var(--danger);font-size:13px;margin:12px 0 0"></p>
-    <div class="forgot">
-      <a href="setup.html">Esqueci minha senha</a>
-      <p>Para redefinir é necessário ter a chave de acesso.</p>
-    </div>
-  </div>
-</section>
 
-<div id="site" class="hidden">
-<header>
-  <div class="logo">Nutri <span>Materno-Infantil</span></div>
-  <div style="display:flex;align-items:center;gap:14px">
-    <span id="sync" class="meta" style="margin:0"></span>
-    <div class="userbox">
-      <button class="btn btn-light" onclick="toggleMenu(event)" aria-haspopup="true" id="userbtn">
-        <span class="avatar" id="avatar">?</span><span id="username">usuário</span> <span style="font-size:11px">▾</span>
-      </button>
-      <div id="usermenu" class="menu hidden">
-        <div class="menu-head">Conectada como <b id="username2">usuário</b></div>
-        <a class="menu-item" href="setup.html">🔑 Trocar senha</a>
-        <div class="menu-note">Exige a chave de acesso.</div>
-        <div class="menu-sep"></div>
-        <button class="menu-item danger" onclick="logout()">↩ Sair</button>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pamela Souza | Nutri Materno Infantil</title>
+  <style>
+    :root {
+      --bg: #f7f8f6;
+      --card: #fff;
+      --text: #26332d;
+      --muted: #718078;
+      --primary: #5f8d78;
+      --primary2: #e5f0ea;
+      --border: #e3e9e5;
+      --danger: #b85c5c
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+      background: var(--bg);
+      color: var(--text)
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit
+    }
+
+    .hidden {
+      display: none !important
+    }
+
+    .login {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px
+    }
+
+    .login-card {
+      width: min(430px, 100%);
+      background: var(--card);
+      padding: 36px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 15px 45px #29463812
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 24px
+    }
+
+    .logo span {
+      color: var(--primary)
+    }
+
+    .login p {
+      color: var(--muted);
+      line-height: 1.5
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin: 16px 0 7px
+    }
+
+    .field {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      outline: none;
+      background: #fff
+    }
+
+    .field:focus {
+      border-color: var(--primary)
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-weight: 700
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff
+    }
+
+    .btn-light {
+      background: var(--primary2);
+      color: var(--primary)
+    }
+
+    .btn-danger {
+      background: #f8e7e7;
+      color: var(--danger)
+    }
+
+    header {
+      height: 72px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      position: sticky;
+      top: 0;
+      z-index: 5
+    }
+
+    .app {
+      display: flex;
+      min-height: calc(100vh - 72px)
+    }
+
+    aside {
+      width: 240px;
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      background: #fff
+    }
+
+    main {
+      flex: 1;
+      padding: 34px 5%;
+      max-width: 1200px
+    }
+
+    .nav {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: none;
+      padding: 11px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--text);
+      margin-bottom: 4px
+    }
+
+    .nav:hover,
+    .nav.active {
+      background: var(--primary2);
+      color: var(--primary)
+    }
+
+    .hero {
+      margin-bottom: 26px
+    }
+
+    .hero h1 {
+      font-size: 32px;
+      margin: 0 0 8px
+    }
+
+    .hero p {
+      color: var(--muted);
+      margin: 0
+    }
+
+    .search {
+      display: flex;
+      gap: 10px;
+      margin: 22px 0
+    }
+
+    .search input {
+      flex: 1;
+      font-size: 17px;
+      padding: 16px;
+      border-radius: 15px;
+      border: 1px solid var(--border)
+    }
+
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 26px
+    }
+
+    .chip {
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 9px 13px;
+      border-radius: 999px;
+      cursor: pointer
+    }
+
+    .chip:hover {
+      border-color: var(--primary);
+      color: var(--primary)
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 20px
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 17px
+    }
+
+    .card p {
+      color: #55645c;
+      line-height: 1.55
+    }
+
+    .meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 9px
+    }
+
+    .actions {
+      display: flex;
+      gap: 7px;
+      margin-top: 14px
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px
+    }
+
+    .form-card {
+      max-width: 760px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px
+    }
+
+    .textarea {
+      min-height: 190px;
+      resize: vertical
+    }
+
+    .empty {
+      padding: 35px;
+      text-align: center;
+      color: var(--muted);
+      background: #fff;
+      border: 1px dashed var(--border);
+      border-radius: 17px
+    }
+
+    .forgot {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      text-align: center
+    }
+
+    .forgot a {
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none
+    }
+
+    .forgot a:hover {
+      text-decoration: underline
+    }
+
+    .forgot p {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 8px 0 0
+    }
+
+    .userbox {
+      position: relative
+    }
+
+    #userbtn {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      text-transform: uppercase
+    }
+
+    .menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      width: 245px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 12px 34px #29463822;
+      padding: 7px;
+      z-index: 20
+    }
+
+    .menu-head {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 8px 10px 10px
+    }
+
+    .menu-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: none;
+      padding: 10px;
+      border-radius: 9px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+      text-decoration: none
+    }
+
+    .menu-item:hover {
+      background: var(--primary2);
+      color: var(--primary)
+    }
+
+    .menu-item.danger:hover {
+      background: #f8e7e7;
+      color: var(--danger)
+    }
+
+    .menu-note {
+      font-size: 11.5px;
+      color: var(--muted);
+      padding: 2px 10px 8px;
+      line-height: 1.45
+    }
+
+    .menu-sep {
+      border-top: 1px solid var(--border);
+      margin: 5px 0
+    }
+
+    @media(max-width:760px) {
+      aside {
+        display: none
+      }
+
+      main {
+        padding: 25px 18px
+      }
+
+      .hero h1 {
+        font-size: 26px
+      }
+
+      .search {
+        flex-direction: column
+      }
+
+      header {
+        padding: 0 18px
+      }
+
+      .grid {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section id="login" class="login">
+    <div class="login-card">
+      <div class="logo">Nutri <span>Materno-Infantil</span></div>
+      <p>Seu banco pessoal de perguntas e respostas para consultas rápidas.</p>
+      <label>Usuário</label>
+      <input id="user" class="field" autocomplete="username" placeholder="seu usuário">
+      <label>Senha</label>
+      <input id="pass" class="field" type="password" autocomplete="current-password" placeholder="sua senha"
+        onkeydown="if(event.key==='Enter')login()">
+      <button id="loginbtn" class="btn btn-primary" style="width:100%;margin-top:16px" onclick="login()">Entrar</button>
+      <p id="loginerr" class="hidden" style="color:var(--danger);font-size:13px;margin:12px 0 0"></p>
+      <div class="forgot">
+        <a href="setup.html">Esqueci minha senha</a>
+        <p>Para redefinir é necessário possuir um token.</p>
       </div>
     </div>
+  </section>
+
+  <div id="site" class="hidden">
+    <header>
+      <div class="logo">Nutri <span>Materno-Infantil</span></div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <span id="sync" class="meta" style="margin:0"></span>
+        <div class="userbox">
+          <button class="btn btn-light" onclick="toggleMenu(event)" aria-haspopup="true" id="userbtn">
+            <span class="avatar" id="avatar">?</span><span id="username">usuário</span> <span
+              style="font-size:11px">▾</span>
+          </button>
+          <div id="usermenu" class="menu hidden">
+            <div class="menu-head">Conectada como <b id="username2">usuário</b></div>
+            <a class="menu-item" href="setup.html">🔑 Trocar senha</a>
+            <div class="menu-note">Exige o token de acesso.</div>
+            <div class="menu-sep"></div>
+            <button class="menu-item danger" onclick="logout()">↩ Sair</button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="app">
+      <aside>
+        <button class="nav active" onclick="showHome()">⌂ Início</button>
+        <button class="nav" onclick="showAll()">▦ Todas as perguntas</button>
+        <button class="nav" onclick="showForm()">＋ Nova pergunta</button>
+        <hr style="border:0;border-top:1px solid var(--border);margin:18px 0">
+        <div style="font-size:12px;color:var(--muted);padding:0 12px">CATEGORIAS</div>
+        <button class="nav" onclick="searchCat('Gestação')">Gestação</button>
+        <button class="nav" onclick="searchCat('Diabetes gestacional')">Diabetes gestacional</button>
+        <button class="nav" onclick="searchCat('Amamentação')">Amamentação</button>
+        <button class="nav" onclick="searchCat('Introdução alimentar')">Introdução alimentar</button>
+        <button class="nav" onclick="searchCat('Alimentação infantil')">Alimentação infantil</button>
+        <button class="nav" onclick="searchCat('Suplementação')">Suplementação</button>
+      </aside>
+      <main id="main"></main>
+    </div>
   </div>
-</header>
-<div class="app">
-<aside>
-  <button class="nav active" onclick="showHome()">⌂ Início</button>
-  <button class="nav" onclick="showAll()">▦ Todas as perguntas</button>
-  <button class="nav" onclick="showForm()">＋ Nova pergunta</button>
-  <hr style="border:0;border-top:1px solid var(--border);margin:18px 0">
-  <div style="font-size:12px;color:var(--muted);padding:0 12px">CATEGORIAS</div>
-  <button class="nav" onclick="searchCat('Gestação')">Gestação</button>
-  <button class="nav" onclick="searchCat('Diabetes gestacional')">Diabetes gestacional</button>
-  <button class="nav" onclick="searchCat('Amamentação')">Amamentação</button>
-  <button class="nav" onclick="searchCat('Introdução alimentar')">Introdução alimentar</button>
-  <button class="nav" onclick="searchCat('Alimentação infantil')">Alimentação infantil</button>
-  <button class="nav" onclick="searchCat('Suplementação')">Suplementação</button>
-</aside>
-<main id="main"></main>
-</div>
-</div>
 
-<script>
-/* ===== Armazenamento: arquivo dados.json dentro do próprio repositório GitHub =====
-   O token de acesso não vive neste código: ele fica cifrado em auth.json (AES-GCM, chave
-   derivada da senha por PBKDF2) e só é decifrado no navegador, no momento do login.
-   Para trocar usuário/senha/token, gere um novo auth.json com o setup.html. */
-const FILE='dados.json', BRANCH='main', CFG='nutri_mi_cfg_v1';
-const DATA_REPO='lucasramos45/nutri-dados';
-const GH={repo:DATA_REPO,token:'',user:'',sha:null};
-let ITEMS=[], queue=Promise.resolve();
+  <script>
+    /* ===== Armazenamento: arquivo dados.json dentro do próprio repositório GitHub =====
+       O token de acesso não vive neste código: ele fica cifrado em auth.json (AES-GCM, chave
+       derivada da senha por PBKDF2) e só é decifrado no navegador, no momento do login.
+       Para trocar usuário/senha/token, gere um novo auth.json com o setup.html. */
+    const FILE = 'dados.json', BRANCH = 'main', CFG = 'nutri_mi_cfg_v1';
+    const DATA_REPO = 'lucasramos45/nutri-dados';
+    const GH = { repo: DATA_REPO, token: '', user: '', sha: null };
+    let ITEMS = [], queue = Promise.resolve();
 
-const DEMO=[
- {id:1,cat:'Diabetes gestacional',q:'Quais pontos devo conferir quando surge uma dúvida sobre diabetes gestacional?',a:'Exemplo de registro. Substitua este texto pela orientação técnica que você utiliza e pela referência correspondente. Este conteúdo é apenas um modelo do sistema.',tags:'diabetes gestacional, glicemia, gestação',source:'Adicionar fonte/referência'},
- {id:2,cat:'Introdução alimentar',q:'Como registrar uma dúvida sobre a introdução alimentar?',a:'Exemplo de registro. Cadastre aqui a sua resposta técnica, observações práticas e a fonte utilizada.',tags:'introdução alimentar, bebê, alimentação',source:'Adicionar fonte/referência'},
- {id:3,cat:'Amamentação',q:'Onde guardar orientações importantes sobre amamentação?',a:'Use este campo para guardar a resposta que você revisou, juntamente com sua fonte ou protocolo.',tags:'amamentação, leite materno',source:'Adicionar fonte/referência'}
-];
-/* base64 <-> texto preservando acentos */
-function b64enc(s){return btoa(String.fromCharCode(...new TextEncoder().encode(s)))}
-function b64dec(s){return new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g,'')),c=>c.charCodeAt(0)))}
+    const DEMO = [
+      { id: 1, cat: 'Diabetes gestacional', q: 'Quais pontos devo conferir quando surge uma dúvida sobre diabetes gestacional?', a: 'Exemplo de registro. Substitua este texto pela orientação técnica que você utiliza e pela referência correspondente. Este conteúdo é apenas um modelo do sistema.', tags: 'diabetes gestacional, glicemia, gestação', source: 'Adicionar fonte/referência' },
+      { id: 2, cat: 'Introdução alimentar', q: 'Como registrar uma dúvida sobre a introdução alimentar?', a: 'Exemplo de registro. Cadastre aqui a sua resposta técnica, observações práticas e a fonte utilizada.', tags: 'introdução alimentar, bebê, alimentação', source: 'Adicionar fonte/referência' },
+      { id: 3, cat: 'Amamentação', q: 'Onde guardar orientações importantes sobre amamentação?', a: 'Use este campo para guardar a resposta que você revisou, juntamente com sua fonte ou protocolo.', tags: 'amamentação, leite materno', source: 'Adicionar fonte/referência' }
+    ];
+    /* base64 <-> texto preservando acentos */
+    function b64enc(s) { return btoa(String.fromCharCode(...new TextEncoder().encode(s))) }
+    function b64dec(s) { return new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g, '')), c => c.charCodeAt(0))) }
 
-/* url relativa à API; allow404 só é usado na leitura inicial, onde 404 = arquivo ainda não existe */
-async function api(method,path,body,allow404){
- const r=await fetch(`https://api.github.com/repos/${GH.repo}${path}`,
-  {method,headers:{Authorization:`Bearer ${GH.token}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},
-   body:body?JSON.stringify(body):undefined,cache:'no-store'});
- if(r.status===404){
-  if(allow404)return null;
-  throw new Error(`Repositório ${GH.repo} não encontrado. Confira o nome (usuario/repositorio) e se o token tem acesso a ele.`);
- }
- if(r.status===401)throw new Error('Token inválido ou expirado.');
- if(r.status===403)throw new Error('O token não tem permissão de escrita (precisa de Contents: Read and write neste repositório).');
- if(r.status===409||r.status===422)throw new Error('O arquivo mudou em outro lugar. Recarregue a página antes de salvar.');
- if(!r.ok)throw new Error(`Erro do GitHub (${r.status}). Verifique o repositório e a conexão.`);
- return r.json();
-}
-const contents=(m,body,allow404)=>api(m,`/contents/${FILE}`+(m==='GET'?`?ref=${BRANCH}&t=${Date.now()}`:''),body,allow404);
+    /* url relativa à API; allow404 só é usado na leitura inicial, onde 404 = arquivo ainda não existe */
+    async function api(method, path, body, allow404) {
+      const r = await fetch(`https://api.github.com/repos/${GH.repo}${path}`,
+        {
+          method, headers: { Authorization: `Bearer ${GH.token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+          body: body ? JSON.stringify(body) : undefined, cache: 'no-store'
+        });
+      if (r.status === 404) {
+        if (allow404) return null;
+        throw new Error(`Repositório ${GH.repo} não encontrado. Confira o nome (usuario/repositorio) e se o token tem acesso a ele.`);
+      }
+      if (r.status === 401) throw new Error('Token inválido ou expirado.');
+      if (r.status === 403) throw new Error('O token não tem permissão de escrita (precisa de Contents: Read and write neste repositório).');
+      if (r.status === 409 || r.status === 422) throw new Error('O arquivo mudou em outro lugar. Recarregue a página antes de salvar.');
+      if (!r.ok) throw new Error(`Erro do GitHub (${r.status}). Verifique o repositório e a conexão.`);
+      return r.json();
+    }
+    const contents = (m, body, allow404) => api(m, `/contents/${FILE}` + (m === 'GET' ? `?ref=${BRANCH}&t=${Date.now()}` : ''), body, allow404);
 
-async function pull(){
- await api('GET','');            // confirma que o repositório existe e o token alcança ele
- const f=await contents('GET',null,true);
- if(!f){ITEMS=DEMO.slice();GH.sha=null;await push('cria dados.json');return}
- GH.sha=f.sha;
- try{const p=JSON.parse(b64dec(f.content));ITEMS=Array.isArray(p)?p:[]}
- catch(e){throw new Error('O arquivo dados.json existe mas não é um JSON válido.')}
-}
+    async function pull() {
+      await api('GET', '');            // confirma que o repositório existe e o token alcança ele
+      const f = await contents('GET', null, true);
+      if (!f) { ITEMS = DEMO.slice(); GH.sha = null; await push('cria dados.json'); return }
+      GH.sha = f.sha;
+      try { const p = JSON.parse(b64dec(f.content)); ITEMS = Array.isArray(p) ? p : [] }
+      catch (e) { throw new Error('O arquivo dados.json existe mas não é um JSON válido.') }
+    }
 
-async function push(msg){
- const res=await contents('PUT',{message:msg,content:b64enc(JSON.stringify(ITEMS,null,2)),branch:BRANCH,...(GH.sha?{sha:GH.sha}:{})});
- GH.sha=res?.content?.sha||null;
-}
+    async function push(msg) {
+      const res = await contents('PUT', { message: msg, content: b64enc(JSON.stringify(ITEMS, null, 2)), branch: BRANCH, ...(GH.sha ? { sha: GH.sha } : {}) });
+      GH.sha = res?.content?.sha || null;
+    }
 
-function sync(t,err){const el=document.getElementById('sync');if(el){el.textContent=t;el.style.color=err?'var(--danger)':'var(--muted)'}}
+    function sync(t, err) { const el = document.getElementById('sync'); if (el) { el.textContent = t; el.style.color = err ? 'var(--danger)' : 'var(--muted)' } }
 
-function data(){return ITEMS}
-/* Salva em memória e envia ao GitHub; desfaz a alteração local se o envio falhar. */
-function save(x){
- const prev=ITEMS;ITEMS=x;sync('Salvando…');
- queue=queue.then(()=>push('atualiza perguntas e respostas'))
-  .then(()=>sync('Salvo no GitHub'))
-  .catch(e=>{ITEMS=prev;sync('Falha ao salvar',1);alert(e.message+'\n\nA alteração não foi salva.');refresh()});
- return queue;
-}
-function refresh(){showHome()}
+    function data() { return ITEMS }
+    /* Salva em memória e envia ao GitHub; desfaz a alteração local se o envio falhar. */
+    function save(x) {
+      const prev = ITEMS; ITEMS = x; sync('Salvando…');
+      queue = queue.then(() => push('atualiza perguntas e respostas'))
+        .then(() => sync('Salvo no GitHub'))
+        .catch(e => { ITEMS = prev; sync('Falha ao salvar', 1); alert(e.message + '\n\nA alteração não foi salva.'); refresh() });
+      return queue;
+    }
+    function refresh() { showHome() }
 
-/* ===== Login: usuário + senha decifram o token guardado em auth.json ===== */
-const bytes=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+    /* ===== Login: usuário + senha decifram o token guardado em auth.json ===== */
+    const bytes = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const SITE_REPO = 'lucasramos45/nutri-app';
 
-async function derive(pass,salt,iter){
- const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
- return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
-}
+    function siteRepo() {
+      const m = location.hostname.match(/^([\w-]+)\.github\.io$/i);
+      if (!m) return SITE_REPO;
+      const seg = location.pathname.split('/').filter(Boolean)[0];
+      return seg && !/\.html?$/i.test(seg) ? `${m[1]}/${seg}` : `${m[1]}/${m[1]}.github.io`;
+    }
 
-async function unlock(user,pass){
- const r=await fetch(`auth.json?t=${Date.now()}`,{cache:'no-store'});
- if(!r.ok)throw new Error('Acesso ainda não configurado neste site (auth.json não encontrado).');
- const a=await r.json();
- const same=user.trim().toLowerCase()===String(a.user||'').toLowerCase();
- const key=await derive(pass,bytes(a.salt),a.iterations||600000);
- let token;
- try{
-  const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:bytes(a.iv)},key,bytes(a.token));
-  token=new TextDecoder().decode(plain);
- }catch(e){throw new Error('Usuário ou senha inválidos.')}
- if(!same)throw new Error('Usuário ou senha inválidos.');
- return {token,user:a.user};
-}
+    /* Lê o auth.json direto do repositório antes de tentar o arquivo servido pelo site:
+       o setup.html grava a senha nova via API, e o repositório reflete isso na hora,
+       enquanto o GitHub Pages ainda pode estar publicando a versão anterior. */
+    async function loadAuth() {
+      const urls = [
+        `https://raw.githubusercontent.com/${siteRepo()}/${BRANCH}/auth.json?t=${Date.now()}`,
+        `auth.json?t=${Date.now()}`
+      ];
+      for (const u of urls) {
+        try { const r = await fetch(u, { cache: 'no-store' }); if (r.ok) return await r.json() } catch (e) { }
+      }
+      throw new Error('Acesso ainda não configurado neste site (auth.json não encontrado).');
+    }
 
-async function login(){
- const btn=document.getElementById('loginbtn'),err=document.getElementById('loginerr');
- const user=document.getElementById('user').value,pass=document.getElementById('pass').value;
- err.classList.add('hidden');
- if(!user.trim()||!pass){err.textContent='Informe o usuário e a senha.';err.classList.remove('hidden');return}
- btn.disabled=true;btn.textContent='Entrando…';
- try{
-  const cred=await unlock(user,pass);
-  GH.token=cred.token;GH.user=cred.user;GH.repo=DATA_REPO;
-  await pull();
-  localStorage.setItem(CFG,JSON.stringify({token:GH.token,user:GH.user}));
-  openSite();
- }catch(e){err.textContent=e.message;err.classList.remove('hidden')}
- finally{btn.disabled=false;btn.textContent='Entrar'}
-}
-function openSite(){
- document.getElementById('login').classList.add('hidden');
- document.getElementById('site').classList.remove('hidden');
- const u=GH.user||'usuário';
- document.getElementById('username').textContent=u;
- document.getElementById('username2').textContent=u;
- document.getElementById('avatar').textContent=u.charAt(0);
- sync(`${ITEMS.length} registros`);showHome();
-}
-function toggleMenu(e){e.stopPropagation();document.getElementById('usermenu').classList.toggle('hidden')}
-document.addEventListener('click',e=>{
- const m=document.getElementById('usermenu');
- if(m&&!m.classList.contains('hidden')&&!e.target.closest('.userbox'))m.classList.add('hidden');
-});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('usermenu')?.classList.add('hidden')});
-function logout(){localStorage.removeItem(CFG);location.reload()}
+    async function derive(pass, salt, iter) {
+      const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: iter, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    }
 
-/* Reconecta automaticamente se o token já estiver decifrado neste navegador. */
-(async()=>{
- const c=localStorage.getItem(CFG);if(!c)return;
- try{
-  const s=JSON.parse(c);GH.token=s.token;GH.user=s.user||'';GH.repo=DATA_REPO;
-  if(!GH.user){ // sessão antiga: descobre o nome pelo auth.json (o campo user não é secreto)
-   try{const a=await(await fetch(`auth.json?t=${Date.now()}`,{cache:'no-store'})).json();GH.user=a.user||''}catch(e){}
-  }
-  await pull();openSite();
- }catch(e){
-  localStorage.removeItem(CFG);
-  const el=document.getElementById('loginerr');el.textContent=e.message;el.classList.remove('hidden');
- }
-})();
+    async function unlock(user, pass) {
+      const a = await loadAuth();
+      const same = user.trim().toLowerCase() === String(a.user || '').toLowerCase();
+      const key = await derive(pass, bytes(a.salt), a.iterations || 600000);
+      let token;
+      try {
+        const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: bytes(a.iv) }, key, bytes(a.token));
+        token = new TextDecoder().decode(plain);
+      } catch (e) { throw new Error('Usuário ou senha inválidos.') }
+      if (!same) throw new Error('Usuário ou senha inválidos.');
+      return { token, user: a.user };
+    }
 
-function shell(title,sub,body){document.getElementById('main').innerHTML=`<div class="topbar"><div><h1 style="margin:0;font-size:25px">${title}</h1><p style="color:var(--muted);margin:5px 0">${sub}</p></div><button class="btn btn-primary" onclick="showForm()">＋ Nova pergunta</button></div>${body}`}
-function showHome(){
- const cats=['Gestação','Diabetes gestacional','Amamentação','Introdução alimentar','Alimentação infantil','Suplementação'];
- shell('Olá! 👋','Pesquise uma palavra-chave ou descreva rapidamente a sua dúvida.',
- `<div class="search"><input id="search" placeholder="Ex.: diabetes gestacional, ferro, mel, glicemia..." onkeydown="if(event.key==='Enter')doSearch()"><button class="btn btn-primary" onclick="doSearch()">Pesquisar</button></div>
- <div class="categories">${cats.map(c=>`<button class="chip" onclick="searchCat('${c}')">${c}</button>`).join('')}</div>
+    async function login() {
+      const btn = document.getElementById('loginbtn'), err = document.getElementById('loginerr');
+      const user = document.getElementById('user').value, pass = document.getElementById('pass').value;
+      err.classList.add('hidden');
+      if (!user.trim() || !pass) { err.textContent = 'Informe o usuário e a senha.'; err.classList.remove('hidden'); return }
+      btn.disabled = true; btn.textContent = 'Entrando…';
+      try {
+        const cred = await unlock(user, pass);
+        GH.token = cred.token; GH.user = cred.user; GH.repo = DATA_REPO;
+        await pull();
+        localStorage.setItem(CFG, JSON.stringify({ token: GH.token, user: GH.user }));
+        openSite();
+      } catch (e) { err.textContent = e.message; err.classList.remove('hidden') }
+      finally { btn.disabled = false; btn.textContent = 'Entrar' }
+    }
+    function openSite() {
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('site').classList.remove('hidden');
+      const u = GH.user || 'usuário';
+      document.getElementById('username').textContent = u;
+      document.getElementById('username2').textContent = u;
+      document.getElementById('avatar').textContent = u.charAt(0);
+      sync(`${ITEMS.length} registros`); showHome();
+    }
+    function toggleMenu(e) { e.stopPropagation(); document.getElementById('usermenu').classList.toggle('hidden') }
+    document.addEventListener('click', e => {
+      const m = document.getElementById('usermenu');
+      if (m && !m.classList.contains('hidden') && !e.target.closest('.userbox')) m.classList.add('hidden');
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('usermenu')?.classList.add('hidden') });
+    function logout() { localStorage.removeItem(CFG); location.reload() }
+
+    /* Reconecta automaticamente se o token já estiver decifrado neste navegador. */
+    (async () => {
+      const c = localStorage.getItem(CFG); if (!c) return;
+      try {
+        const s = JSON.parse(c); GH.token = s.token; GH.user = s.user || ''; GH.repo = DATA_REPO;
+        if (!GH.user) { // sessão antiga: descobre o nome pelo auth.json (o campo user não é secreto)
+          try { GH.user = (await loadAuth()).user || '' } catch (e) { }
+        }
+        await pull(); openSite();
+      } catch (e) {
+        localStorage.removeItem(CFG);
+        const el = document.getElementById('loginerr'); el.textContent = e.message; el.classList.remove('hidden');
+      }
+    })();
+
+    function shell(title, sub, body) { document.getElementById('main').innerHTML = `<div class="topbar"><div><h1 style="margin:0;font-size:25px">${title}</h1><p style="color:var(--muted);margin:5px 0">${sub}</p></div><button class="btn btn-primary" onclick="showForm()">＋ Nova pergunta</button></div>${body}` }
+    function showHome() {
+      const cats = ['Gestação', 'Diabetes gestacional', 'Amamentação', 'Introdução alimentar', 'Alimentação infantil', 'Suplementação'];
+      shell('Olá! 👋', 'Pesquise uma palavra-chave ou descreva rapidamente a sua dúvida.',
+        `<div class="search"><input id="search" placeholder="Ex.: diabetes gestacional, ferro, mel, glicemia..." onkeydown="if(event.key==='Enter')doSearch()"><button class="btn btn-primary" onclick="doSearch()">Pesquisar</button></div>
+ <div class="categories">${cats.map(c => `<button class="chip" onclick="searchCat('${c}')">${c}</button>`).join('')}</div>
  <div id="results"></div>`);
- renderResults(data().slice(0,6),'Perguntas recentes');
-}
-function doSearch(){let q=document.getElementById('search').value.trim().toLowerCase();if(!q){renderResults(data().slice(0,6),'Perguntas recentes');return}let terms=q.split(/\s+/);let r=data().filter(x=>terms.some(t=>(x.q+' '+x.a+' '+x.tags+' '+x.cat).toLowerCase().includes(t)));renderResults(r,`Resultados para “${q}”`)}
-function searchCat(cat){showHome();document.getElementById('search').value=cat;let r=data().filter(x=>x.cat===cat);renderResults(r,cat)}
-function showAll(){shell('Todas as perguntas','Seu banco de conhecimento.','<div id="results"></div>');renderResults(data(),'Todas as perguntas')}
-function renderResults(items,title){let el=document.getElementById('results');if(!el)return;el.innerHTML=`<h2 style="font-size:18px">${title}</h2>`+(items.length?`<div class="grid">${items.map(card).join('')}</div>`:`<div class="empty">Nenhum conteúdo encontrado.<br><br>Você pode cadastrar uma nova pergunta.</div>`)}
-function card(x){return `<article class="card"><div class="meta">${x.cat}</div><h3>${x.q}</h3><p>${x.a.length>180?x.a.slice(0,180)+'…':x.a}</p><div class="meta">🔎 ${x.tags}</div><div class="actions"><button class="btn btn-light" onclick="view(${x.id})">Ver resposta</button><button class="btn" style="background:#f4f5f4" onclick="edit(${x.id})">Editar</button></div></article>`}
-function view(id){let x=data().find(y=>y.id===id);shell(x.cat,x.q,`<div class="form-card"><div class="meta">RESPOSTA</div><div style="white-space:pre-wrap;line-height:1.7">${esc(x.a)}</div><hr style="border:0;border-top:1px solid var(--border);margin:22px 0"><b>Palavras-chave</b><p class="meta">${esc(x.tags)}</p><b>Fonte/referência</b><p class="meta">${esc(x.source||'Não cadastrada')}</p><div class="actions"><button class="btn btn-light" onclick="edit(${x.id})">Editar</button><button class="btn btn-danger" onclick="removeItem(${x.id})">Excluir</button></div></div>`)}
-function showForm(id=null){let x=id?data().find(y=>y.id===id):{cat:'',q:'',a:'',tags:'',source:''};shell(id?'Editar pergunta':'Nova pergunta','Cadastre uma dúvida para encontrar rapidamente no futuro.',`<div class="form-card">
+      renderResults(data().slice(0, 6), 'Perguntas recentes');
+    }
+    function doSearch() { let q = document.getElementById('search').value.trim().toLowerCase(); if (!q) { renderResults(data().slice(0, 6), 'Perguntas recentes'); return } let terms = q.split(/\s+/); let r = data().filter(x => terms.some(t => (x.q + ' ' + x.a + ' ' + x.tags + ' ' + x.cat).toLowerCase().includes(t))); renderResults(r, `Resultados para “${q}”`) }
+    function searchCat(cat) { showHome(); document.getElementById('search').value = cat; let r = data().filter(x => x.cat === cat); renderResults(r, cat) }
+    function showAll() { shell('Todas as perguntas', 'Seu banco de conhecimento.', '<div id="results"></div>'); renderResults(data(), 'Todas as perguntas') }
+    function renderResults(items, title) { let el = document.getElementById('results'); if (!el) return; el.innerHTML = `<h2 style="font-size:18px">${title}</h2>` + (items.length ? `<div class="grid">${items.map(card).join('')}</div>` : `<div class="empty">Nenhum conteúdo encontrado.<br><br>Você pode cadastrar uma nova pergunta.</div>`) }
+    function card(x) { return `<article class="card"><div class="meta">${x.cat}</div><h3>${x.q}</h3><p>${x.a.length > 180 ? x.a.slice(0, 180) + '…' : x.a}</p><div class="meta">🔎 ${x.tags}</div><div class="actions"><button class="btn btn-light" onclick="view(${x.id})">Ver resposta</button><button class="btn" style="background:#f4f5f4" onclick="edit(${x.id})">Editar</button></div></article>` }
+    function view(id) { let x = data().find(y => y.id === id); shell(x.cat, x.q, `<div class="form-card"><div class="meta">RESPOSTA</div><div style="white-space:pre-wrap;line-height:1.7">${esc(x.a)}</div><hr style="border:0;border-top:1px solid var(--border);margin:22px 0"><b>Palavras-chave</b><p class="meta">${esc(x.tags)}</p><b>Fonte/referência</b><p class="meta">${esc(x.source || 'Não cadastrada')}</p><div class="actions"><button class="btn btn-light" onclick="edit(${x.id})">Editar</button><button class="btn btn-danger" onclick="removeItem(${x.id})">Excluir</button></div></div>`) }
+    function showForm(id = null) {
+      let x = id ? data().find(y => y.id === id) : { cat: '', q: '', a: '', tags: '', source: '' }; shell(id ? 'Editar pergunta' : 'Nova pergunta', 'Cadastre uma dúvida para encontrar rapidamente no futuro.', `<div class="form-card">
 <label>Categoria</label><select id="fcat" class="field"><option>Gestação</option><option>Diabetes gestacional</option><option>Amamentação</option><option>Introdução alimentar</option><option>Alimentação infantil</option><option>Avaliação nutricional</option><option>Suplementação</option><option>Outros</option></select>
 <label>Pergunta</label><input id="fq" class="field" value="${escAttr(x.q)}" placeholder="Ex.: Pode oferecer mel para menores de 1 ano?">
 <label>Resposta</label><textarea id="fa" class="field textarea" placeholder="Digite a resposta técnica revisada...">${esc(x.a)}</textarea>
 <label>Palavras-chave</label><input id="ftags" class="field" value="${escAttr(x.tags)}" placeholder="Ex.: mel, bebê, botulismo, introdução alimentar">
 <label>Fonte / referência</label><input id="fsource" class="field" value="${escAttr(x.source)}" placeholder="Ex.: diretriz, protocolo, artigo...">
-<div class="actions"><button class="btn btn-primary" onclick="saveForm(${id||'null'})">Salvar</button><button class="btn btn-light" onclick="showHome()">Cancelar</button></div></div>`);
-document.getElementById('fcat').value=x.cat||'Gestação'}
-function saveForm(id){let arr=data();let obj={id:id||Date.now(),cat:document.getElementById('fcat').value,q:document.getElementById('fq').value.trim(),a:document.getElementById('fa').value.trim(),tags:document.getElementById('ftags').value.trim(),source:document.getElementById('fsource').value.trim()};if(!obj.q||!obj.a){alert('Preencha a pergunta e a resposta.');return}if(id){let i=arr.findIndex(x=>x.id===id);arr[i]=obj}else arr.unshift(obj);save(arr);view(obj.id)}
-function edit(id){showForm(id)}
-function removeItem(id){if(confirm('Excluir esta pergunta?')){save(data().filter(x=>x.id!==id));showAll()}}
-function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-function escAttr(s){return esc(s).replace(/\n/g,'&#10;')}
-</script>
+<div class="actions"><button class="btn btn-primary" onclick="saveForm(${id || 'null'})">Salvar</button><button class="btn btn-light" onclick="showHome()">Cancelar</button></div></div>`);
+      document.getElementById('fcat').value = x.cat || 'Gestação'
+    }
+    function saveForm(id) { let arr = data(); let obj = { id: id || Date.now(), cat: document.getElementById('fcat').value, q: document.getElementById('fq').value.trim(), a: document.getElementById('fa').value.trim(), tags: document.getElementById('ftags').value.trim(), source: document.getElementById('fsource').value.trim() }; if (!obj.q || !obj.a) { alert('Preencha a pergunta e a resposta.'); return } if (id) { let i = arr.findIndex(x => x.id === id); arr[i] = obj } else arr.unshift(obj); save(arr); view(obj.id) }
+    function edit(id) { showForm(id) }
+    function removeItem(id) { if (confirm('Excluir esta pergunta?')) { save(data().filter(x => x.id !== id)); showAll() } }
+    function esc(s) { return String(s || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])) }
+    function escAttr(s) { return esc(s).replace(/\n/g, '&#10;') }
+  </script>
 </body>
+
 </html>

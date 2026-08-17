@@ -1,168 +1,394 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trocar senha | Nutri Materno-Infantil</title>
-<style>
-:root{--bg:#f7f8f6;--card:#fff;--text:#26332d;--muted:#718078;--primary:#5f8d78;--primary2:#e5f0ea;--border:#e3e9e5;--danger:#b85c5c;--ok:#2f7d5b}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text);display:grid;place-items:center;min-height:100vh;padding:24px 18px}
-.wrap{width:min(430px,100%)}
-.card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:32px;box-shadow:0 15px 45px #29463812}
-.back{color:var(--primary);font-size:14px;text-decoration:none;font-weight:700}
-h1{font-size:23px;margin:16px 0 8px}h1 span{color:var(--primary)}
-.lead{color:var(--muted);line-height:1.55;margin:0;font-size:14.5px}
-label{display:block;font-size:13px;font-weight:700;margin:18px 0 7px}
-.hint{font-size:12px;color:var(--muted);font-weight:400;margin-top:-4px;margin-bottom:7px;line-height:1.45}
-.field{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px 14px;font:inherit;outline:none;background:#fff}
-.field:focus{border-color:var(--primary)}
-textarea.field{min-height:110px;font-family:Consolas,monospace;font-size:12px;resize:vertical}
-.btn{border:0;border-radius:12px;padding:12px 18px;cursor:pointer;font-weight:700;font-size:15px}
-.btn-primary{background:var(--primary);color:#fff}.btn-light{background:var(--primary2);color:var(--primary)}
-.btn:disabled{opacity:.5;cursor:default}
-.err{color:var(--danger);font-size:13.5px;margin-top:14px;line-height:1.5}
-.ok{color:var(--ok);font-size:13.5px;margin-top:12px;font-weight:700}
-.hidden{display:none!important}
-.meter{font-size:12.5px;margin-top:7px;color:var(--muted)}
-details{margin-top:20px;border-top:1px solid var(--border);padding-top:14px}
-summary{cursor:pointer;color:var(--primary);font-size:13.5px;font-weight:700;list-style:none}
-summary::-webkit-details-marker{display:none}
-summary::before{content:'▸ ';font-size:11px}
-details[open] summary::before{content:'▾ '}
-details .body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:12px}
-details .body b{color:var(--text)}
-details ol{padding-left:20px;margin:8px 0}details li{margin-bottom:6px}
-code{background:#f0f2f0;padding:2px 6px;border-radius:6px;font-size:12.5px}
-.steps{background:#f7f9f8;border:1px solid var(--border);border-radius:14px;padding:16px 18px;font-size:14px;line-height:1.6}
-.steps ol{padding-left:20px;margin:8px 0 0}.steps li{margin-bottom:7px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trocar senha | Nutri Materno-Infantil</title>
+  <style>
+    :root {
+      --bg: #f7f8f6;
+      --card: #fff;
+      --text: #26332d;
+      --muted: #718078;
+      --primary: #5f8d78;
+      --primary2: #e5f0ea;
+      --border: #e3e9e5;
+      --danger: #b85c5c;
+      --ok: #2f7d5b
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      padding: 24px 18px
+    }
+
+    .wrap {
+      width: min(430px, 100%)
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 15px 45px #29463812
+    }
+
+    .back {
+      color: var(--primary);
+      font-size: 14px;
+      text-decoration: none;
+      font-weight: 700
+    }
+
+    h1 {
+      font-size: 23px;
+      margin: 16px 0 8px
+    }
+
+    h1 span {
+      color: var(--primary)
+    }
+
+    .lead {
+      color: var(--muted);
+      line-height: 1.55;
+      margin: 0;
+      font-size: 14.5px
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin: 18px 0 7px
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 400;
+      margin-top: -4px;
+      margin-bottom: 7px;
+      line-height: 1.45
+    }
+
+    .field {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font: inherit;
+      outline: none;
+      background: #fff
+    }
+
+    .field:focus {
+      border-color: var(--primary)
+    }
+
+    textarea.field {
+      min-height: 110px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      resize: vertical
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 15px
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff
+    }
+
+    .btn-light {
+      background: var(--primary2);
+      color: var(--primary)
+    }
+
+    .btn:disabled {
+      opacity: .5;
+      cursor: default
+    }
+
+    .err {
+      color: var(--danger);
+      font-size: 13.5px;
+      margin-top: 14px;
+      line-height: 1.5
+    }
+
+    .ok {
+      color: var(--ok);
+      font-size: 13.5px;
+      margin-top: 12px;
+      font-weight: 700
+    }
+
+    .hidden {
+      display: none !important
+    }
+
+    .meter {
+      font-size: 12.5px;
+      margin-top: 7px;
+      color: var(--muted)
+    }
+
+    details {
+      margin-top: 20px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--primary);
+      font-size: 13.5px;
+      font-weight: 700;
+      list-style: none
+    }
+
+    summary::-webkit-details-marker {
+      display: none
+    }
+
+    summary::before {
+      content: '▸ ';
+      font-size: 11px
+    }
+
+    details[open] summary::before {
+      content: '▾ '
+    }
+
+    details .body {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-top: 12px
+    }
+
+    details .body b {
+      color: var(--text)
+    }
+
+    details ol {
+      padding-left: 20px;
+      margin: 8px 0
+    }
+
+    details li {
+      margin-bottom: 6px
+    }
+
+    code {
+      background: #f0f2f0;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 12.5px
+    }
+
+    .steps {
+      background: #f7f9f8;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      font-size: 14px;
+      line-height: 1.6
+    }
+
+    .steps ol {
+      padding-left: 20px;
+      margin: 8px 0 0
+    }
+
+    .steps li {
+      margin-bottom: 7px
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrap">
+  <div class="wrap">
 
-<div id="form" class="card">
-  <a class="back" href="index.html">← Voltar</a>
-  <h1>Trocar <span>senha</span></h1>
-  <p class="lead">Escolha a senha nova que você vai usar para entrar.</p>
+    <div id="form" class="card">
+      <a class="back" href="index.html">← Voltar</a>
+      <h1>Trocar <span>senha</span></h1>
+      <p class="lead">Escolha a senha nova que você vai usar para entrar.</p>
 
-  <label>Usuário</label>
-  <input id="user" class="field" placeholder="pamela" autocomplete="off">
+      <label>Usuário</label>
+      <input id="user" class="field" placeholder="Seu nome" autocomplete="off">
 
-  <label>Nova senha</label>
-  <div class="hint">Use 12 caracteres ou mais. Evite nomes e datas.</div>
-  <input id="p1" class="field" type="password" placeholder="digite a nova senha" autocomplete="new-password" oninput="strength()">
-  <div id="meter" class="meter"></div>
+      <label>Nova senha</label>
+      <div class="hint">Use 12 caracteres ou mais. Evite nomes e datas.</div>
+      <input id="p1" class="field" type="password" placeholder="digite a nova senha" autocomplete="new-password"
+        oninput="strength()">
+      <div id="meter" class="meter"></div>
 
-  <label>Repetir a nova senha</label>
-  <input id="p2" class="field" type="password" placeholder="digite novamente" autocomplete="new-password">
+      <label>Repetir a nova senha</label>
+      <input id="p2" class="field" type="password" placeholder="digite novamente" autocomplete="new-password">
 
-  <label>Chave de acesso</label>
-  <div class="hint">É o código longo que começa com <code>github_pat_</code>. Sem ela não é possível trocar a senha.</div>
-  <input id="token" class="field" type="password" placeholder="cole a chave aqui" autocomplete="off">
+      <label>Chave de acesso</label>
+      <div class="hint">É o código longo que começa com <code>github_pat_</code>. Sem ela não é possível trocar a senha.
+      </div>
+      <input id="token" class="field" type="password" placeholder="cole a chave aqui" autocomplete="off">
 
-  <div style="margin-top:24px"><button id="go" class="btn btn-primary" style="width:100%" onclick="gen()">Continuar</button></div>
-  <p id="err" class="err hidden"></p>
+      <div style="margin-top:24px"><button id="go" class="btn btn-primary" style="width:100%"
+          onclick="gen()">Continuar</button></div>
+      <p id="err" class="err hidden"></p>
 
-  <details>
-    <summary>Ver detalhes</summary>
-    <div class="body">
-      <p><b>Por que a chave é necessária?</b><br>
-      A senha serve para embaralhar a chave de acesso, que é o que realmente abre as suas informações. Trocar a senha significa embaralhar essa chave outra vez, e para isso ela precisa estar em mãos.</p>
-      <p><b>Isso é seguro?</b><br>
-      Sim. O embaralhamento acontece dentro do seu navegador e nada é enviado para a internet. A chave nunca fica legível: quem não souber a senha vê apenas um texto sem sentido. Por isso, a força da proteção é a força da senha — uma senha curta ou óbvia é o único ponto fraco possível.</p>
-      <p><b>E se eu esquecer a senha?</b><br>
-      Não existe recuperação automática. O caminho é voltar aqui com a chave de acesso e definir uma senha nova.</p>
-      <p><b>Detalhe técnico</b><br>
-      A chave é cifrada com AES-GCM de 256 bits. A chave de cifra é derivada da senha por PBKDF2-SHA256 com 600.000 iterações e sal aleatório de 16 bytes. O resultado é gravado no arquivo <code>auth.json</code>, servido junto do site. Toda a operação usa a WebCrypto API nativa do navegador.</p>
+      <details>
+        <summary>Ver detalhes</summary>
+        <div class="body">
+          <p><b>Por que a chave é necessária?</b><br>
+            A senha serve para embaralhar a chave de acesso, que é o que realmente abre as suas informações. Trocar a
+            senha significa embaralhar essa chave outra vez, e para isso ela precisa estar em mãos.</p>
+          <p><b>Isso é seguro?</b><br>
+            Sim. O embaralhamento acontece dentro do seu navegador e nada é enviado para a internet. A chave nunca fica
+            legível: quem não souber a senha vê apenas um texto sem sentido. Por isso, a força da proteção é a força da
+            senha — uma senha curta ou óbvia é o único ponto fraco possível.</p>
+          <p><b>E se eu esquecer a senha?</b><br>
+            Não existe recuperação automática. O caminho é voltar aqui com a chave de acesso e definir uma senha nova.
+          </p>
+          <p><b>Detalhe técnico</b><br>
+            A chave é cifrada com AES-GCM de 256 bits. A chave de cifra é derivada da senha por PBKDF2-SHA256 com
+            600.000 iterações e sal aleatório de 16 bytes. A cifragem usa a WebCrypto API nativa do navegador; o
+            resultado é gravado no arquivo <code>auth.json</code> do repositório do site, via API do GitHub, usando a
+            própria chave de acesso informada acima.</p>
+        </div>
+      </details>
     </div>
-  </details>
-</div>
 
-<div id="out" class="card hidden">
-  <h1>Senha <span>pronta</span></h1>
-  <p class="lead">Falta só um passo: salvar o arquivo gerado no lugar do antigo. Depois disso, a senha nova já vale.</p>
+    <div id="done" class="card hidden">
+      <h1>Senha <span>trocada</span></h1>
+      <p class="lead">Pronto, não precisa fazer mais nada. A senha nova já vale — use ela no próximo acesso.</p>
 
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 4px">
-    <button class="btn btn-primary" onclick="dl()">Baixar arquivo</button>
-    <button class="btn btn-light" onclick="copy()">Copiar</button>
-  </div>
-  <p id="okmsg" class="ok hidden"></p>
+      <div class="steps" style="margin-top:22px">
+        <b>Importante</b><br>
+        Guarde a senha em um lugar seguro. Ninguém consegue recuperá-la: se ela for esquecida, o único caminho é voltar
+        aqui com a chave de acesso e definir outra.
+      </div>
 
-  <div class="steps" style="margin-top:18px">
-    <b>Onde salvar</b>
-    <ol>
-      <li>Abra <code>github.com/lucasramos45/nutri-app</code></li>
-      <li>Clique em <b>Add file</b> → <b>Upload files</b></li>
-      <li>Arraste o arquivo baixado e confirme em <b>Commit changes</b></li>
-    </ol>
-    Se preferir, envie o arquivo para quem cuida do site.
-  </div>
-
-  <div style="margin-top:20px"><a class="back" href="index.html">← Voltar ao app</a></div>
-
-  <details>
-    <summary>Ver o conteúdo gerado</summary>
-    <div class="body">
-      <p>Este é o arquivo <code>auth.json</code>. A chave de acesso está aqui dentro, embaralhada — sem a senha, este texto não serve para nada.</p>
-      <textarea id="json" class="field" readonly onclick="this.select()"></textarea>
+      <div style="margin-top:24px"><a class="btn btn-primary" href="index.html"
+          style="display:inline-block;text-decoration:none">Entrar com a senha nova</a></div>
     </div>
-  </details>
-</div>
 
-</div>
+  </div>
 
-<script>
-const ITER=600000;
-const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b)));
+  <script>
+    const ITER = 600000;
+    const BRANCH = 'main';
+    /* repositório do site, onde o auth.json é servido; usado só se a página não estiver no github.io */
+    const SITE_REPO = 'lucasramos45/nutri-app';
+    const b64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
+    const b64txt = s => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
 
-function strength(){
- const v=document.getElementById('p1').value,m=document.getElementById('meter');
- if(!v){m.textContent='';return}
- let s=0;
- if(v.length>=8)s++; if(v.length>=12)s++; if(v.length>=16)s++;
- if(/[a-z]/.test(v)&&/[A-Z]/.test(v))s++; if(/\d/.test(v))s++; if(/[^\w]/.test(v))s++;
- const t=['muito fraca','fraca','razoável','boa','forte','muito forte'][Math.min(s,5)];
- m.textContent=`Senha ${t} — ${v.length} caracteres`;
- m.style.color=s<=2?'var(--danger)':s<=3?'#a07c2e':'var(--ok)';
-}
+    /* Descobre o repositório a partir da própria URL (usuario.github.io/repositorio). */
+    function siteRepo() {
+      const m = location.hostname.match(/^([\w-]+)\.github\.io$/i);
+      if (!m) return SITE_REPO;
+      const seg = location.pathname.split('/').filter(Boolean)[0];
+      return seg && !/\.html?$/i.test(seg) ? `${m[1]}/${seg}` : `${m[1]}/${m[1]}.github.io`;
+    }
 
-function fail(msg){const e=document.getElementById('err');e.textContent=msg;e.classList.remove('hidden')}
+    function gh(method, path, token, body) {
+      return fetch(`https://api.github.com/repos/${siteRepo()}${path}`, {
+        method,
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' },
+        body: body ? JSON.stringify(body) : undefined, cache: 'no-store'
+      });
+    }
 
-async function gen(){
- const user=document.getElementById('user').value.trim();
- const p1=document.getElementById('p1').value,p2=document.getElementById('p2').value;
- const token=document.getElementById('token').value.trim();
- const btn=document.getElementById('go');
- document.getElementById('err').classList.add('hidden');
- if(!user)return fail('Informe o usuário.');
- if(p1.length<8)return fail('A senha precisa de pelo menos 8 caracteres.');
- if(p1!==p2)return fail('As duas senhas não são iguais.');
- if(!token)return fail('Cole a chave de acesso.');
- if(!/^(github_pat_|ghp_)/.test(token))return fail('Essa chave não parece certa — ela começa com github_pat_.');
+    /* Grava o auth.json novo direto no repositório do site: é isso que faz a senha valer
+       sem nenhum passo manual. Se o token não tiver permissão, quem chama mostra o plano B. */
+    async function publish(json, token) {
+      let sha = null;
+      const cur = await gh('GET', `/contents/auth.json?ref=${BRANCH}&t=${Date.now()}`, token);
+      if (cur.status === 401) throw new Error('A chave de acesso é inválida ou expirou.');
+      if (cur.ok) sha = (await cur.json()).sha;
+      else if (cur.status !== 404) throw new Error(`O GitHub respondeu ${cur.status} ao ler o site.`);
 
- btn.disabled=true;btn.textContent='Um instante…';
- try{
-  const salt=crypto.getRandomValues(new Uint8Array(16));
-  const iv=crypto.getRandomValues(new Uint8Array(12));
-  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(p1),'PBKDF2',false,['deriveKey']);
-  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:ITER,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt']);
-  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(token));
-  document.getElementById('json').value=JSON.stringify({user,salt:b64(salt),iv:b64(iv),iterations:ITER,token:b64(ct)},null,2);
-  document.getElementById('token').value='';
-  document.getElementById('form').classList.add('hidden');
-  document.getElementById('out').classList.remove('hidden');
- }catch(e){fail('Não foi possível concluir: '+e.message)}
- finally{btn.disabled=false;btn.textContent='Continuar'}
-}
+      const r = await gh('PUT', '/contents/auth.json', token, {
+        message: 'chore: atualiza a senha de acesso', content: b64txt(json), branch: BRANCH, ...(sha ? { sha } : {})
+      });
+      if (r.ok) return;
+      if (r.status === 401) throw new Error('A chave de acesso é inválida ou expirou.');
+      if (r.status === 403 || r.status === 404) throw new Error(`A chave de acesso não tem permissão para gravar em ${siteRepo()} (precisa de Contents: Read and write).`);
+      if (r.status === 409 || r.status === 422) throw new Error('O arquivo mudou no site enquanto a senha era trocada. Tente novamente.');
+      throw new Error(`O GitHub respondeu ${r.status} ao salvar.`);
+    }
 
-function dl(){
- const a=document.createElement('a');
- a.href=URL.createObjectURL(new Blob([document.getElementById('json').value],{type:'application/json'}));
- a.download='auth.json';a.click();URL.revokeObjectURL(a.href);
- msg('Arquivo baixado.');
-}
-function copy(){navigator.clipboard.writeText(document.getElementById('json').value).then(()=>msg('Conteúdo copiado.'))}
-function msg(t){const o=document.getElementById('okmsg');o.textContent=t;o.classList.remove('hidden')}
-</script>
+    function strength() {
+      const v = document.getElementById('p1').value, m = document.getElementById('meter');
+      if (!v) { m.textContent = ''; return }
+      let s = 0;
+      if (v.length >= 8) s++; if (v.length >= 12) s++; if (v.length >= 16) s++;
+      if (/[a-z]/.test(v) && /[A-Z]/.test(v)) s++; if (/\d/.test(v)) s++; if (/[^\w]/.test(v)) s++;
+      const t = ['muito fraca', 'fraca', 'razoável', 'boa', 'forte', 'muito forte'][Math.min(s, 5)];
+      m.textContent = `Senha ${t} — ${v.length} caracteres`;
+      m.style.color = s <= 2 ? 'var(--danger)' : s <= 3 ? '#a07c2e' : 'var(--ok)';
+    }
+
+    function fail(msg) { const e = document.getElementById('err'); e.textContent = msg; e.classList.remove('hidden') }
+
+    async function gen() {
+      const user = document.getElementById('user').value.trim();
+      const p1 = document.getElementById('p1').value, p2 = document.getElementById('p2').value;
+      const token = document.getElementById('token').value.trim();
+      const btn = document.getElementById('go');
+      document.getElementById('err').classList.add('hidden');
+      if (!user) return fail('Informe o usuário.');
+      if (p1.length < 8) return fail('A senha precisa de pelo menos 8 caracteres.');
+      if (p1 !== p2) return fail('As duas senhas não são iguais.');
+      if (!token) return fail('Cole a chave de acesso.');
+      if (!/^(github_pat_|ghp_)/.test(token)) return fail('Essa chave não parece certa — ela começa com github_pat_.');
+
+      btn.disabled = true; btn.textContent = 'Um instante…';
+      let json;
+      try {
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(p1), 'PBKDF2', false, ['deriveKey']);
+        const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: ITER, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
+        const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(token));
+        json = JSON.stringify({ user, salt: b64(salt), iv: b64(iv), iterations: ITER, token: b64(ct) }, null, 2);
+      } catch (e) {
+        btn.disabled = false; btn.textContent = 'Continuar';
+        return fail('Não foi possível concluir: ' + e.message);
+      }
+
+      /* A troca só vale quando o auth.json novo entra no repositório. Se isso falhar,
+         nada mudou: a senha antiga continua valendo e o erro fica na própria tela,
+         com os campos preenchidos, para corrigir e tentar de novo. */
+      btn.textContent = 'Salvando no site…';
+      try { await publish(json, token) }
+      catch (e) { return fail(e.message + ' A senha não foi trocada — a antiga continua valendo.') }
+      finally { btn.disabled = false; btn.textContent = 'Continuar' }
+
+      document.getElementById('token').value = '';
+      document.getElementById('form').classList.add('hidden');
+      document.getElementById('done').classList.remove('hidden');
+    }
+  </script>
 </body>
+
 </html>
